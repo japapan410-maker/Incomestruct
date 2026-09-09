@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(12), 0, dpToPx(16));
 
         String[] tabs = {"Beranda", "Transaksi", "Rekap", "Pengaturan"};
-        String[] icons = {"⌂", "⇆", "📊", "⚙"};
+        String[] icons = {"⌂", "⇆", "📈", "⚙"}; // Ikon rekap diganti menggunakan lambang chart grafik 📈 persis seperti pada gambar
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -188,6 +188,7 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
+        // Ikon kartu diperbarui persis menggunakan simbol pada referensi screenshot (↓ untuk Pendapatan, ↑ untuk Pengeluaran, 👝 untuk Tabungan, 🛡 untuk Dana Darurat)
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
         row1.addView(createStatCard("Pendapatan", formatShort(in), "#10B981", "↓"));
@@ -196,7 +197,7 @@ public class MainActivity extends Activity {
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "👛"));
+        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "👝"));
         row2.addView(createStatCard("Dana darurat", formatShort(emg), "#F59E0B", "🛡"));
         containerContent.addView(row2);
 
@@ -323,7 +324,6 @@ public class MainActivity extends Activity {
         etNominal.setLayoutParams(pNom);
         formCard.addView(etNominal);
 
-        // KEMBALIKAN TANGGAL & WAKTU DI FORM TRANSAKSI
         LinearLayout dateRow = new LinearLayout(this);
         dateRow.setOrientation(LinearLayout.HORIZONTAL);
 
