@@ -19,7 +19,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Build with Gradle Direct
+    - name: Build with Gradle
       run: gradle assembleDebug
 
     - name: Upload APK
@@ -27,3 +27,4 @@ jobs:
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+        if-no-files-found: error
