@@ -1,9 +1,7 @@
 package com.helmi.incomestruct;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -91,7 +89,6 @@ public class MainActivity extends Activity {
             tvIcon.setText(icons[i]);
             tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
             tvIcon.setGravity(Gravity.CENTER);
-            // Abu-abu saat tidak dipilih, emas/gold saat dipilih
             tvIcon.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
 
             TextView tvText = new TextView(this);
@@ -189,7 +186,6 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
-        // Kartu statistik bersih tanpa kotak warna latar belakang di icon-nya
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
         row1.addView(createStatCard("Pendapatan", formatShort(in), "#10B981", "↓"));
@@ -198,7 +194,8 @@ public class MainActivity extends Activity {
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "👝"));
+        // Logo Tabungan diganti dompet biru (👛), Dana Darurat diganti perisai emas (🛡)
+        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "👛"));
         row2.addView(createStatCard("Dana darurat", formatShort(emg), "#F59E0B", "🛡"));
         containerContent.addView(row2);
 
@@ -235,7 +232,6 @@ public class MainActivity extends Activity {
         params.setMargins(dpToPx(6), 0, dpToPx(6), dpToPx(12));
         card.setLayoutParams(params);
 
-        // Icon teks murni satu warna tanpa background bulat/kotak
         TextView tvIcon = new TextView(this);
         tvIcon.setText(icon);
         tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
@@ -264,7 +260,7 @@ public class MainActivity extends Activity {
     }
 
     private void renderCatatFormUI() {
-        LinearLayout formCard = new LinearLayout(this);
+        final LinearLayout formCard = new LinearLayout(this);
         formCard.setOrientation(LinearLayout.VERTICAL);
         formCard.setPadding(dpToPx(20), dpToPx(20), dpToPx(20), dpToPx(20));
 
@@ -283,16 +279,22 @@ public class MainActivity extends Activity {
         typeRow1.setOrientation(LinearLayout.HORIZONTAL);
         typeRow1.setPadding(0, dpToPx(8), 0, dpToPx(12));
 
-        typeRow1.addView(createTypeButton("Pendapatan", "in"));
-        typeRow1.addView(createTypeButton("Pengeluaran", "out"));
+        final Button btnIn = createTypeButton("Pendapatan", "in");
+        final Button btnOut = createTypeButton("Pengeluaran", "out");
+
+        typeRow1.addView(btnIn);
+        typeRow1.addView(btnOut);
         formCard.addView(typeRow1);
 
         LinearLayout typeRow2 = new LinearLayout(this);
         typeRow2.setOrientation(LinearLayout.HORIZONTAL);
         typeRow2.setPadding(0, 0, 0, dpToPx(16));
 
-        typeRow2.addView(createTypeButton("Tabungan", "tabungan"));
-        typeRow2.addView(createTypeButton("Dana Darurat", "darurat"));
+        final Button btnTab = createTypeButton("Tabungan", "tabungan");
+        final Button btnEmg = createTypeButton("Dana Darurat", "darurat");
+
+        typeRow2.addView(btnTab);
+        typeRow2.addView(btnEmg);
         formCard.addView(typeRow2);
 
         TextView lblNom = new TextView(this);
@@ -315,7 +317,7 @@ public class MainActivity extends Activity {
         gdInput.setCornerRadius(dpToPx(14));
         etNominal.setBackground(gdInput);
 
-        LinearLayout.LayoutParams pNom = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        final LinearLayout.LayoutParams pNom = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         pNom.setMargins(0, dpToPx(6), 0, dpToPx(16));
         etNominal.setLayoutParams(pNom);
         formCard.addView(etNominal);
@@ -371,20 +373,42 @@ public class MainActivity extends Activity {
 
         formCard.addView(dateRow);
 
-        TextView lblKat = new TextView(this);
+        final TextView lblKat = new TextView(this);
         lblKat.setText("Sumber / Detail Kategori");
         lblKat.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         lblKat.setTextColor(Color.parseColor("#94A3B8"));
         formCard.addView(lblKat);
 
+        // Spinner untuk Pendapatan, EditText untuk Pengeluaran (ketik sendiri tanpa pilihan)
         final Spinner spinnerKat = new Spinner(this);
         updateSpinnerOptions(spinnerKat, selectedType);
         spinnerKat.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
         spinnerKat.setBackground(gdInput);
-        LinearLayout.LayoutParams pSp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(48));
+        final LinearLayout.LayoutParams pSp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(48));
         pSp.setMargins(0, dpToPx(6), 0, dpToPx(16));
         spinnerKat.setLayoutParams(pSp);
+
+        final EditText etKatManual = new EditText(this);
+        etKatManual.setHint("Ketik nama pengeluaran sendiri...");
+        etKatManual.setHintTextColor(Color.parseColor("#475569"));
+        etKatManual.setTextColor(Color.WHITE);
+        etKatManual.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        etKatManual.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
+        etKatManual.setBackground(gdInput);
+        etKatManual.setLayoutParams(pNom);
+
+        if (selectedType.equals("out")) {
+            spinnerKat.setVisibility(View.GONE);
+            etKatManual.setVisibility(View.VISIBLE);
+            lblKat.setText("Nama Pengeluaran (Ketik Sendiri)");
+        } else {
+            spinnerKat.setVisibility(View.VISIBLE);
+            etKatManual.setVisibility(View.GONE);
+            lblKat.setText("Sumber / Detail Kategori");
+        }
+
         formCard.addView(spinnerKat);
+        formCard.addView(etKatManual);
 
         TextView lblKet = new TextView(this);
         lblKet.setText("Catatan (Opsional)");
@@ -425,7 +449,14 @@ public class MainActivity extends Activity {
                     long current = pref.getLong(selectedType, 0);
                     pref.edit().putLong(selectedType, current + val).apply();
 
-                    String kat = spinnerKat.getSelectedItem().toString();
+                    String kat = "";
+                    if (selectedType.equals("out")) {
+                        kat = etKatManual.getText().toString().trim();
+                        if (kat.isEmpty()) kat = "Pengeluaran";
+                    } else {
+                        kat = spinnerKat.getSelectedItem() != null ? spinnerKat.getSelectedItem().toString() : "Lainnya";
+                    }
+
                     String tgl = etTgl.getText().toString() + " " + etWaktu.getText().toString();
                     String ket = etKet.getText().toString();
 
@@ -487,15 +518,6 @@ public class MainActivity extends Activity {
                 "Pendapatan Gojek", 
                 "ShopeeFood", 
                 "Pemasukan Lainnya"
-            };
-        } else if (type.equals("out")) {
-            options = new String[]{
-                "Cicilan Rutin", 
-                "Arisan", 
-                "Uang Orang Tua", 
-                "Uang Saku Adek", 
-                "Uang Jajan Keponakan", 
-                "Kebutuhan Sehari-hari"
             };
         } else {
             options = new String[]{"Pos Tabungan", "Pos Dana Darurat"};
@@ -978,7 +1000,7 @@ public class MainActivity extends Activity {
         containerContent.addView(tvSec3);
 
         containerContent.addView(createCustomBox("Sumber Pendapatan", "Gaji · Grab · Gojek · ShopeeFood"));
-        containerContent.addView(createCustomBox("Kategori Pengeluaran", "Cicilan · Arisan · Orang Tua · Adek · Keponakan · Kebutuhan"));
+        containerContent.addView(createCustomBox("Kategori Pengeluaran", "Ketik nama pengeluaran sendiri"));
 
         TextView tvSec4 = new TextView(this);
         tvSec4.setText("🔒 Keamanan Aplikasi");
