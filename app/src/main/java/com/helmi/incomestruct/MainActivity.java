@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(12), 0, dpToPx(16));
 
         String[] tabs = {"Beranda", "Transaksi", "Rekap", "Pengaturan"};
-        String[] icons = {"⌂", "⇆", "📈", "⚙"}; // Ikon rekap diganti menggunakan lambang chart grafik 📈 persis seperti pada gambar
+        String[] icons = {"⌂", "⇆", "📈", "⚙"};
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -91,6 +91,7 @@ public class MainActivity extends Activity {
             tvIcon.setText(icons[i]);
             tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
             tvIcon.setGravity(Gravity.CENTER);
+            // Abu-abu saat tidak dipilih, emas/gold saat dipilih
             tvIcon.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
 
             TextView tvText = new TextView(this);
@@ -188,7 +189,7 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
-        // Ikon kartu diperbarui persis menggunakan simbol pada referensi screenshot (↓ untuk Pendapatan, ↑ untuk Pengeluaran, 👝 untuk Tabungan, 🛡 untuk Dana Darurat)
+        // Kartu statistik bersih tanpa kotak warna latar belakang di icon-nya
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
         row1.addView(createStatCard("Pendapatan", formatShort(in), "#10B981", "↓"));
@@ -234,19 +235,14 @@ public class MainActivity extends Activity {
         params.setMargins(dpToPx(6), 0, dpToPx(6), dpToPx(12));
         card.setLayoutParams(params);
 
+        // Icon teks murni satu warna tanpa background bulat/kotak
         TextView tvIcon = new TextView(this);
         tvIcon.setText(icon);
-        tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        tvIcon.setGravity(Gravity.CENTER);
+        tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         tvIcon.setTextColor(Color.parseColor(colorHex));
         
-        GradientDrawable gdIcon = new GradientDrawable();
-        gdIcon.setColor(Color.parseColor(colorHex.equals("#10B981") ? "#064E3B" : colorHex.equals("#F59E0B") ? "#451A03" : "#1E3A8A"));
-        gdIcon.setShape(GradientDrawable.OVAL);
-        tvIcon.setBackground(gdIcon);
-        
-        LinearLayout.LayoutParams pIcon = new LinearLayout.LayoutParams(dpToPx(32), dpToPx(32));
-        pIcon.setMargins(0, 0, 0, dpToPx(10));
+        LinearLayout.LayoutParams pIcon = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        pIcon.setMargins(0, 0, 0, dpToPx(8));
         tvIcon.setLayoutParams(pIcon);
 
         TextView label = new TextView(this);
