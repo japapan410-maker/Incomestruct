@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(12), 0, dpToPx(16));
 
         String[] tabs = {"Beranda", "Transaksi", "Rekap", "Pengaturan"};
-        String[] icons = {"⌂", "⇆", "📊", "⚙"}; // Ikon rekap disamakan menggunakan simbol elegan agar selaras
+        String[] icons = {"⌂", "⇆", "📊", "⚙"};
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -134,8 +134,11 @@ public class MainActivity extends Activity {
         tvSub.setTypeface(Typeface.DEFAULT_BOLD);
         tvSub.setTextColor(Color.parseColor("#F59E0B"));
 
+        // Nama pemilik diambil otomatis dari SharedPreferences (bisa diubah di menu Pengaturan)
+        String ownerName = pref.getString("owner_name", "Helmi Zainul");
+
         TextView tvTitle = new TextView(this);
-        tvTitle.setText("Halo, Helmi Zainul");
+        tvTitle.setText("Halo, " + ownerName);
         tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
@@ -365,7 +368,7 @@ public class MainActivity extends Activity {
         etWaktu.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
         etWaktu.setBackground(gdInput);
         LinearLayout.LayoutParams pSub2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        pSub2.setMargins(dpToPx(6), dpToPx(6), 0, dpToPx(16));
+        pSub2.setMargins(0, dpToPx(6), 0, dpToPx(16));
         etWaktu.setLayoutParams(pSub2);
         colWaktu.addView(etWaktu);
         dateRow.addView(colWaktu);
@@ -502,7 +505,6 @@ public class MainActivity extends Activity {
             options = new String[]{"👛 Pos Tabungan", "🛡 Pos Dana Darurat"};
         }
         
-        // Memperbaiki warna teks dropdown agar putih terang dan sangat jelas terbaca
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, options) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -866,19 +868,65 @@ public class MainActivity extends Activity {
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
+        // 0. UBAH NAMA PEMILIK PROFIL
+        TextView tvSecName = new TextView(this);
+        tvSecName.setText("👤 Nama Profil Pengguna");
+        tvSecName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvSecName.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSecName.setTextColor(Color.WHITE);
+        tvSecName.setPadding(0, 0, 0, dpToPx(8));
+        containerContent.addView(tvSecName);
+
+        final EditText etOwnerName = createInputText("Nama Pemilik", pref.getString("owner_name", "Helmi Zainul"));
+        Button btnSaveName = new Button(this);
+        btnSaveName.setText("Simpan Nama Profil");
+        btnSaveName.setTextColor(Color.parseColor("#0F172A"));
+        btnSaveName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        btnSaveName.setTypeface(Typeface.DEFAULT_BOLD);
+
+        GradientDrawable gdBtnName = new GradientDrawable();
+        gdBtnName.setColor(Color.parseColor("#F59E0B"));
+        gdBtnName.setCornerRadius(dpToPx(12));
+        btnSaveName.setBackground(gdBtnName);
+
+        btnSaveName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newName = etOwnerName.getText().toString();
+                if (!newName.isEmpty()) {
+                    pref.edit().putString("owner_name", newName).apply();
+                    Toast.makeText(MainActivity.this, "Nama Profil Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
+                    renderTab(3);
+                }
+            }
+        });
+
+        LinearLayout cardName = new LinearLayout(this);
+        cardName.setOrientation(LinearLayout.VERTICAL);
+        cardName.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+        GradientDrawable gdCardName = new GradientDrawable();
+        gdCardName.setColor(Color.parseColor("#121721"));
+        gdCardName.setCornerRadius(dpToPx(16));
+        cardName.setBackground(gdCardName);
+        cardName.addView(etOwnerName);
+        cardName.addView(btnSaveName);
+        containerContent.addView(cardName);
+
+        // 1. TARGET KEUANGAN
         TextView tvSec1 = new TextView(this);
         tvSec1.setText("🚩 Target Keuangan");
         tvSec1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         tvSec1.setTypeface(Typeface.DEFAULT_BOLD);
         tvSec1.setTextColor(Color.WHITE);
-        tvSec1.setPadding(0, 0, 0, dpToPx(8));
+        tvSec1.setPadding(0, dpToPx(16), 0, dpToPx(8));
         containerContent.addView(tvSec1);
 
-        final EditText etTargetTab = createInput("Target Tabungan", String.valueOf(pref.getLong("target_tabungan", 10000000)));
-        final EditText etTargetEmg = createInput("Target Dana Darurat", String.valueOf(pref.getLong("target_darurat", 15000000)));
+        final EditText etTargetTab = createInputNumber("Target Tabungan", String.valueOf(pref.getLong("target_tabungan", 10000000)));
+        final EditText etTargetEmg = createInputNumber("Target Dana Darurat", String.valueOf(pref.getLong("target_darurat", 15000000)));
         containerContent.addView(etTargetTab);
         containerContent.addView(etTargetEmg);
 
+        // 2. PENGINGAT HARIAN
         TextView tvSec2 = new TextView(this);
         tvSec2.setText("🔔 Pengingat Penyisihan");
         tvSec2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -928,6 +976,7 @@ public class MainActivity extends Activity {
         cardRemind.addView(sw);
         containerContent.addView(cardRemind);
 
+        // 3. DAFTAR CUSTOM
         TextView tvSec3 = new TextView(this);
         tvSec3.setText("≡ Daftar Custom Sumber");
         tvSec3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -939,6 +988,7 @@ public class MainActivity extends Activity {
         containerContent.addView(createCustomBox("Sumber Pendapatan", "Gaji Tgl 10 · Grab Weekend · Gojek Weekend · ShopeeFood"));
         containerContent.addView(createCustomBox("Kategori Pengeluaran", "Cicilan · Arisan · Orang Tua · Adek · Keponakan · Kebutuhan"));
 
+        // 4. KEAMANAN
         TextView tvSec4 = new TextView(this);
         tvSec4.setText("🔒 Keamanan Aplikasi");
         tvSec4.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -962,7 +1012,7 @@ public class MainActivity extends Activity {
         tvPinTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvPinTitle.setTextColor(Color.WHITE);
 
-        final EditText etPin = createInput("Buat PIN (4-6 angka)", pref.getString("app_pin", ""));
+        final EditText etPin = createInputNumber("Buat PIN (4-6 angka)", pref.getString("app_pin", ""));
         etPin.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
 
         Button btnPin = new Button(this);
@@ -992,6 +1042,7 @@ public class MainActivity extends Activity {
         cardPin.addView(btnPin);
         containerContent.addView(cardPin);
 
+        // 5. INFO PEMBUAT
         TextView tvAuthor = new TextView(this);
         tvAuthor.setText("\nINCOMESTRUCT v1.0\nDibuat oleh Helmi Zainul Pahmi");
         tvAuthor.setTextColor(Color.parseColor("#F59E0B"));
@@ -1033,7 +1084,7 @@ public class MainActivity extends Activity {
         return card;
     }
 
-    private EditText createInput(String hint, String val) {
+    private EditText createInputNumber(String hint, String val) {
         EditText et = new EditText(this);
         et.setHint(hint);
         et.setText(val);
@@ -1050,6 +1101,26 @@ public class MainActivity extends Activity {
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.setMargins(0, dpToPx(6), 0, dpToPx(8));
+        et.setLayoutParams(lp);
+        return et;
+    }
+
+    private EditText createInputText(String hint, String val) {
+        EditText et = new EditText(this);
+        et.setHint(hint);
+        et.setText(val);
+        et.setHintTextColor(Color.parseColor("#64748B"));
+        et.setTextColor(Color.WHITE);
+        et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        et.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(Color.parseColor("#0B0E14"));
+        gd.setCornerRadius(dpToPx(14));
+        et.setBackground(gd);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, dpToPx(6), dpToPx(8), dpToPx(8));
         et.setLayoutParams(lp);
         return et;
     }
