@@ -187,17 +187,17 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
-        // 4 KARTU STATISTIK (DESAIN SEPERTI GAMBAR KEDUA)
+        // 4 KARTU STATISTIK
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "↓"));
-        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "↑"));
+        row1.addView(createStatCard("Pendapatan", formatShort(in), "#10B981", "↓"));
+        row1.addView(createStatCard("Pengeluaran", formatShort(out), "#F59E0B", "↑"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "👛"));
-        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡"));
+        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "👛"));
+        row2.addView(createStatCard("Dana darurat", formatShort(emg), "#F59E0B", "🛡"));
         containerContent.addView(row2);
 
         // TOMBOL AKSI FORM TRANSAKSI
@@ -217,7 +217,7 @@ public class MainActivity extends Activity {
         containerContent.addView(tvCatat);
         containerContent.addView(tvCatatSub);
 
-        // FORM INPUT FULL (GAYA GAMBAR PERTAMA)
+        // FORM INPUT FULL
         renderCatatFormUI();
     }
 
@@ -278,7 +278,7 @@ public class MainActivity extends Activity {
         gdForm.setCornerRadius(dpToPx(22));
         formCard.setBackground(gdForm);
 
-        // 1. PILIH TIPE (Pendapatan / Pengeluaran / Tabungan / Darurat)
+        // 1. PILIH TIPE
         TextView lblType = new TextView(this);
         lblType.setText("Kategori Utama");
         lblType.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
@@ -655,11 +655,19 @@ public class MainActivity extends Activity {
         tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
-        tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(16));
+        tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(12));
+
+        TextView tvDesc = new TextView(this);
+        tvDesc.setText("Pantau arus uang dengan ringkas dan jelas.");
+        tvDesc.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvDesc.setTextColor(Color.parseColor("#64748B"));
+        tvDesc.setPadding(0, 0, 0, dpToPx(16));
 
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
+        containerContent.addView(tvDesc);
 
+        // FILTER PERIODE (Harian, Mingguan, Bulanan, Tahunan)
         LinearLayout periodRow = new LinearLayout(this);
         periodRow.setOrientation(LinearLayout.HORIZONTAL);
         periodRow.setPadding(0, 0, 0, dpToPx(16));
@@ -668,7 +676,7 @@ public class MainActivity extends Activity {
         for (final String p : periods) {
             TextView btnP = new TextView(this);
             btnP.setText(p);
-            btnP.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            btnP.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
             btnP.setGravity(Gravity.CENTER);
             btnP.setTypeface(Typeface.DEFAULT_BOLD);
             
@@ -680,11 +688,11 @@ public class MainActivity extends Activity {
                 btnP.setTextColor(Color.parseColor("#94A3B8"));
                 gd.setColor(Color.parseColor("#121721"));
             }
-            gd.setCornerRadius(dpToPx(12));
+            gd.setCornerRadius(dpToPx(14));
             btnP.setBackground(gd);
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dpToPx(38), 1.0f);
-            lp.setMargins(dpToPx(2), 0, dpToPx(2), 0);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dpToPx(42), 1.0f);
+            lp.setMargins(dpToPx(3), 0, dpToPx(3), 0);
             btnP.setLayoutParams(lp);
             btnP.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -703,6 +711,7 @@ public class MainActivity extends Activity {
         long emg = pref.getLong("darurat", 0);
         long saldo = in - out - tab - emg;
 
+        // KARTU BESAR SISA BERSIH
         LinearLayout cardBig = new LinearLayout(this);
         cardBig.setOrientation(LinearLayout.VERTICAL);
         cardBig.setPadding(dpToPx(20), dpToPx(20), dpToPx(20), dpToPx(20));
@@ -732,17 +741,44 @@ public class MainActivity extends Activity {
         cardBig.setLayoutParams(lpBig);
         containerContent.addView(cardBig);
 
+        // 4 KARTU KECIL DI REKAP
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createSimpleGridCard("Pendapatan", formatRupiah(in), "#10B981"));
-        row1.addView(createSimpleGridCard("Pengeluaran", formatRupiah(out), "#F59E0B"));
+        row1.addView(createSimpleGridCard("Pendapatan", formatShort(in), "#10B981"));
+        row1.addView(createSimpleGridCard("Pengeluaran", formatShort(out), "#F59E0B"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createSimpleGridCard("Tabungan", formatRupiah(tab), "#3B82F6"));
-        row2.addView(createSimpleGridCard("Dana darurat", formatRupiah(emg), "#F59E0B"));
+        row2.addView(createSimpleGridCard("Tabungan", formatShort(tab), "#3B82F6"));
+        row2.addView(createSimpleGridCard("Dana darurat", formatShort(emg), "#F59E0B"));
         containerContent.addView(row2);
+
+        // BAGIAN PERBANDINGAN ARUS UANG (GRAFIK GARIS)
+        TextView tvArus = new TextView(this);
+        tvArus.setText("Perbandingan arus uang");
+        tvArus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        tvArus.setTypeface(Typeface.DEFAULT_BOLD);
+        tvArus.setTextColor(Color.WHITE);
+        tvArus.setPadding(0, dpToPx(24), 0, dpToPx(12));
+        containerContent.addView(tvArus);
+
+        LinearLayout cardArus = new LinearLayout(this);
+        cardArus.setOrientation(LinearLayout.VERTICAL);
+        cardArus.setPadding(dpToPx(20), dpToPx(18), dpToPx(20), dpToPx(18));
+
+        GradientDrawable gdArus = new GradientDrawable();
+        gdArus.setColor(Color.parseColor("#121721"));
+        gdArus.setCornerRadius(dpToPx(20));
+        cardArus.setBackground(gdArus);
+
+        long maxArus = Math.max(Math.max(Math.max(in, out), tab), Math.max(emg, 1));
+        cardArus.addView(createArusRow("Pendapatan", in, maxArus, "#10B981"));
+        cardArus.addView(createArusRow("Pengeluaran", out, maxArus, "#F59E0B"));
+        cardArus.addView(createArusRow("Tabungan", tab, maxArus, "#3B82F6"));
+        cardArus.addView(createArusRow("Darurat", emg, maxArus, "#F59E0B"));
+
+        containerContent.addView(cardArus);
     }
 
     private View createSimpleGridCard(String label, String val, String colorHex) {
@@ -774,6 +810,37 @@ public class MainActivity extends Activity {
         card.addView(tvL);
         card.addView(tvV);
         return card;
+    }
+
+    private View createArusRow(String label, long val, long max, String colorHex) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(0, dpToPx(8), 0, dpToPx(8));
+
+        TextView tvL = new TextView(this);
+        tvL.setText(label);
+        tvL.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvL.setTextColor(Color.parseColor("#94A3B8"));
+        tvL.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(95), ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        pb.setMax((int) max);
+        pb.setProgress((int) val);
+        pb.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+
+        TextView tvV = new TextView(this);
+        tvV.setText(formatShort(val));
+        tvV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvV.setTypeface(Typeface.DEFAULT_BOLD);
+        tvV.setTextColor(Color.WHITE);
+        tvV.setGravity(Gravity.END);
+        tvV.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(75), ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        row.addView(tvL);
+        row.addView(pb);
+        row.addView(tvV);
+        return row;
     }
 
     private void renderPengaturan() {
@@ -990,5 +1057,12 @@ public class MainActivity extends Activity {
         Locale localeID = new Locale("in", "ID");
         NumberFormat format = NumberFormat.getCurrencyInstance(localeID);
         return format.format(amount).replace(",00", "");
+    }
+
+    private String formatShort(long amount) {
+        if (amount >= 1000000000) return "Rp" + (amount / 1000000000) + " M";
+        if (amount >= 1000000) return "Rp" + (amount / 1000000) + " jt";
+        if (amount >= 1000) return "Rp" + (amount / 1000) + " rb";
+        return "Rp" + amount;
     }
 }
