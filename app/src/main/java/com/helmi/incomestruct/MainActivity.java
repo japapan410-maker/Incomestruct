@@ -194,7 +194,6 @@ public class MainActivity extends Activity {
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        // Logo Tabungan diganti dompet biru (👛), Dana Darurat diganti perisai emas (🛡)
         row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "👛"));
         row2.addView(createStatCard("Dana darurat", formatShort(emg), "#F59E0B", "🛡"));
         containerContent.addView(row2);
@@ -279,22 +278,16 @@ public class MainActivity extends Activity {
         typeRow1.setOrientation(LinearLayout.HORIZONTAL);
         typeRow1.setPadding(0, dpToPx(8), 0, dpToPx(12));
 
-        final Button btnIn = createTypeButton("Pendapatan", "in");
-        final Button btnOut = createTypeButton("Pengeluaran", "out");
-
-        typeRow1.addView(btnIn);
-        typeRow1.addView(btnOut);
+        typeRow1.addView(createTypeButton("Pendapatan", "in"));
+        typeRow1.addView(createTypeButton("Pengeluaran", "out"));
         formCard.addView(typeRow1);
 
         LinearLayout typeRow2 = new LinearLayout(this);
         typeRow2.setOrientation(LinearLayout.HORIZONTAL);
         typeRow2.setPadding(0, 0, 0, dpToPx(16));
 
-        final Button btnTab = createTypeButton("Tabungan", "tabungan");
-        final Button btnEmg = createTypeButton("Dana Darurat", "darurat");
-
-        typeRow2.addView(btnTab);
-        typeRow2.addView(btnEmg);
+        typeRow2.addView(createTypeButton("Tabungan", "tabungan"));
+        typeRow2.addView(createTypeButton("Dana Darurat", "darurat"));
         formCard.addView(typeRow2);
 
         TextView lblNom = new TextView(this);
@@ -379,7 +372,7 @@ public class MainActivity extends Activity {
         lblKat.setTextColor(Color.parseColor("#94A3B8"));
         formCard.addView(lblKat);
 
-        // Spinner untuk Pendapatan, EditText untuk Pengeluaran (ketik sendiri tanpa pilihan)
+        // Spinner untuk Pendapatan, Tabungan, & Dana Darurat. EditText khusus Pengeluaran (ketik sendiri)
         final Spinner spinnerKat = new Spinner(this);
         updateSpinnerOptions(spinnerKat, selectedType);
         spinnerKat.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
@@ -510,18 +503,14 @@ public class MainActivity extends Activity {
     }
 
     private void updateSpinnerOptions(Spinner spinner, String type) {
-        String[] options;
-        if (type.equals("in")) {
-            options = new String[]{
-                "Gaji", 
-                "Pendapatan Grab", 
-                "Pendapatan Gojek", 
-                "ShopeeFood", 
-                "Pemasukan Lainnya"
-            };
-        } else {
-            options = new String[]{"Pos Tabungan", "Pos Dana Darurat"};
-        }
+        // Pilihan untuk Pendapatan, Tabungan, dan Dana Darurat disamakan
+        String[] options = new String[]{
+            "Gaji", 
+            "Pendapatan Grab", 
+            "Pendapatan Gojek", 
+            "ShopeeFood", 
+            "Pemasukan Lainnya"
+        };
         
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, options) {
             @Override
@@ -999,7 +988,7 @@ public class MainActivity extends Activity {
         tvSec3.setPadding(0, dpToPx(16), 0, dpToPx(8));
         containerContent.addView(tvSec3);
 
-        containerContent.addView(createCustomBox("Sumber Pendapatan", "Gaji · Grab · Gojek · ShopeeFood"));
+        containerContent.addView(createCustomBox("Sumber Pendapatan / Tabungan / Darurat", "Gaji · Grab · Gojek · ShopeeFood"));
         containerContent.addView(createCustomBox("Kategori Pengeluaran", "Ketik nama pengeluaran sendiri"));
 
         TextView tvSec4 = new TextView(this);
