@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
     private LinearLayout containerContent;
     private int currentTab = 0;
     private String searchQuery = "";
+    private String selectedType = "in"; // "in", "out", "tabungan", "darurat"
     private String periodFilter = "Bulanan";
 
     @Override
@@ -134,18 +135,19 @@ public class MainActivity extends Activity {
         tvSub.setTextColor(Color.parseColor("#F59E0B"));
 
         TextView tvTitle = new TextView(this);
-        tvTitle.setText("Halo, siap atur keuangan?");
+        tvTitle.setText("Halo, Helmi Zainul");
         tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
-        tvTitle.setPadding(0, dpToPx(6), 0, dpToPx(20));
+        tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(18));
 
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
+        // SALDO UTAMA
         LinearLayout cardSaldo = new LinearLayout(this);
         cardSaldo.setOrientation(LinearLayout.VERTICAL);
-        cardSaldo.setPadding(dpToPx(22), dpToPx(22), dpToPx(22), dpToPx(22));
+        cardSaldo.setPadding(dpToPx(24), dpToPx(22), dpToPx(24), dpToPx(22));
         
         GradientDrawable gdSaldo = new GradientDrawable();
         gdSaldo.setColor(Color.parseColor("#F59E0B"));
@@ -153,7 +155,7 @@ public class MainActivity extends Activity {
         cardSaldo.setBackground(gdSaldo);
 
         TextView labelSaldo = new TextView(this);
-        labelSaldo.setText("SALDO / SISA UANG");
+        labelSaldo.setText("SALDO BERSIH (SIAP PAKAI)");
         labelSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         labelSaldo.setTypeface(Typeface.DEFAULT_BOLD);
         labelSaldo.setTextColor(Color.parseColor("#78350F"));
@@ -169,10 +171,10 @@ public class MainActivity extends Activity {
         tvSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
         tvSaldo.setTypeface(Typeface.DEFAULT_BOLD);
         tvSaldo.setTextColor(Color.parseColor("#0F172A"));
-        tvSaldo.setPadding(0, dpToPx(8), 0, dpToPx(8));
+        tvSaldo.setPadding(0, dpToPx(6), 0, dpToPx(6));
 
         TextView tvSubSaldo = new TextView(this);
-        tvSubSaldo.setText("Aman digunakan saat ini");
+        tvSubSaldo.setText("Gaji tgl 10 & Ojol akhir pekan terkelola aman");
         tvSubSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSubSaldo.setTextColor(Color.parseColor("#78350F"));
 
@@ -181,54 +183,45 @@ public class MainActivity extends Activity {
         cardSaldo.addView(tvSubSaldo);
         
         LinearLayout.LayoutParams pSaldo = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        pSaldo.setMargins(0, 0, 0, dpToPx(18));
+        pSaldo.setMargins(0, 0, 0, dpToPx(16));
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
+        // 4 KARTU STATISTIK (DESAIN SEPERTI GAMBAR KEDUA)
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createGridCard("Pendapatan", formatShort(in), "#10B981", "↓"));
-        row1.addView(createGridCard("Pengeluaran", formatShort(out), "#F59E0B", "↑"));
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "↓"));
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "↑"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createGridCard("Tabungan", formatShort(tab), "#3B82F6", "👛"));
-        row2.addView(createGridCard("Dana Darurat", formatShort(emg), "#F59E0B", "🛡"));
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "👛"));
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡"));
         containerContent.addView(row2);
 
+        // TOMBOL AKSI FORM TRANSAKSI
         TextView tvCatat = new TextView(this);
-        tvCatat.setText("Catat Transaksi Baru");
+        tvCatat.setText("Catat Transaksi");
         tvCatat.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         tvCatat.setTypeface(Typeface.DEFAULT_BOLD);
         tvCatat.setTextColor(Color.WHITE);
-        tvCatat.setPadding(0, dpToPx(20), 0, dpToPx(14));
+        tvCatat.setPadding(0, dpToPx(22), 0, dpToPx(4));
+
+        TextView tvCatatSub = new TextView(this);
+        tvCatatSub.setText("Catat Gaji Tgl 10 & Ojol Sabtu Minggu di sini");
+        tvCatatSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        tvCatatSub.setTextColor(Color.parseColor("#64748B"));
+        tvCatatSub.setPadding(0, 0, 0, dpToPx(12));
+
         containerContent.addView(tvCatat);
+        containerContent.addView(tvCatatSub);
 
-        LinearLayout btnGrid = new LinearLayout(this);
-        btnGrid.setOrientation(LinearLayout.HORIZONTAL);
-        btnGrid.addView(createActionButton("Pendapatan", "+", "in"));
-        btnGrid.addView(createActionButton("Pengeluaran", "-", "out"));
-        btnGrid.addView(createActionButton("Tabungan", "👛", "tabungan"));
-        btnGrid.addView(createActionButton("Darurat", "🛡", "darurat"));
-        containerContent.addView(btnGrid);
-
-        TextView tvTarget = new TextView(this);
-        tvTarget.setText("Target Finansial");
-        tvTarget.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        tvTarget.setTypeface(Typeface.DEFAULT_BOLD);
-        tvTarget.setTextColor(Color.WHITE);
-        tvTarget.setPadding(0, dpToPx(24), 0, dpToPx(14));
-        containerContent.addView(tvTarget);
-
-        long targetTab = pref.getLong("target_tabungan", 10000000);
-        long targetEmg = pref.getLong("target_darurat", 15000000);
-
-        containerContent.addView(createTargetCard("Tabungan", tab, targetTab));
-        containerContent.addView(createTargetCard("Dana Darurat", emg, targetEmg));
+        // FORM INPUT FULL (GAYA GAMBAR PERTAMA)
+        renderCatatFormUI();
     }
 
-    private View createGridCard(String title, String val, String colorHex, String icon) {
+    private View createStatCard(String title, String val, String colorHex, String icon) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dpToPx(18), dpToPx(18), dpToPx(18), dpToPx(18));
@@ -246,7 +239,7 @@ public class MainActivity extends Activity {
         tvIcon.setText(icon);
         tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         tvIcon.setGravity(Gravity.CENTER);
-        tvIcon.setTextColor(Color.WHITE);
+        tvIcon.setTextColor(Color.parseColor(colorHex));
         
         GradientDrawable gdIcon = new GradientDrawable();
         gdIcon.setColor(Color.parseColor(colorHex.equals("#10B981") ? "#064E3B" : colorHex.equals("#F59E0B") ? "#451A03" : "#1E3A8A"));
@@ -264,7 +257,7 @@ public class MainActivity extends Activity {
 
         TextView valueTv = new TextView(this);
         valueTv.setText(val);
-        valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+        valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         valueTv.setTypeface(Typeface.DEFAULT_BOLD);
         valueTv.setTextColor(Color.parseColor(colorHex));
         valueTv.setPadding(0, dpToPx(6), 0, 0);
@@ -275,101 +268,251 @@ public class MainActivity extends Activity {
         return card;
     }
 
-    private View createActionButton(String label, String symbol, final String type) {
-        LinearLayout btn = new LinearLayout(this);
-        btn.setOrientation(LinearLayout.VERTICAL);
-        btn.setGravity(Gravity.CENTER);
-        btn.setPadding(dpToPx(14), dpToPx(16), dpToPx(14), dpToPx(16));
+    private void renderCatatFormUI() {
+        LinearLayout formCard = new LinearLayout(this);
+        formCard.setOrientation(LinearLayout.VERTICAL);
+        formCard.setPadding(dpToPx(20), dpToPx(20), dpToPx(20), dpToPx(20));
+
+        GradientDrawable gdForm = new GradientDrawable();
+        gdForm.setColor(Color.parseColor("#121721"));
+        gdForm.setCornerRadius(dpToPx(22));
+        formCard.setBackground(gdForm);
+
+        // 1. PILIH TIPE (Pendapatan / Pengeluaran / Tabungan / Darurat)
+        TextView lblType = new TextView(this);
+        lblType.setText("Kategori Utama");
+        lblType.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        lblType.setTextColor(Color.parseColor("#94A3B8"));
+        formCard.addView(lblType);
+
+        LinearLayout typeRow1 = new LinearLayout(this);
+        typeRow1.setOrientation(LinearLayout.HORIZONTAL);
+        typeRow1.setPadding(0, dpToPx(8), 0, dpToPx(12));
+
+        typeRow1.addView(createTypeButton("Pendapatan", "in"));
+        typeRow1.addView(createTypeButton("Pengeluaran", "out"));
+        formCard.addView(typeRow1);
+
+        LinearLayout typeRow2 = new LinearLayout(this);
+        typeRow2.setOrientation(LinearLayout.HORIZONTAL);
+        typeRow2.setPadding(0, 0, 0, dpToPx(16));
+
+        typeRow2.addView(createTypeButton("Tabungan", "tabungan"));
+        typeRow2.addView(createTypeButton("Dana Darurat", "darurat"));
+        formCard.addView(typeRow2);
+
+        // 2. NOMINAL
+        TextView lblNom = new TextView(this);
+        lblNom.setText("Nominal (Rp)");
+        lblNom.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        lblNom.setTextColor(Color.parseColor("#94A3B8"));
+        formCard.addView(lblNom);
+
+        final EditText etNominal = new EditText(this);
+        etNominal.setHint("0");
+        etNominal.setHintTextColor(Color.parseColor("#475569"));
+        etNominal.setTextColor(Color.WHITE);
+        etNominal.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
+        etNominal.setTypeface(Typeface.DEFAULT_BOLD);
+        etNominal.setInputType(InputType.TYPE_CLASS_NUMBER);
+        etNominal.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+
+        GradientDrawable gdInput = new GradientDrawable();
+        gdInput.setColor(Color.parseColor("#0B0E14"));
+        gdInput.setCornerRadius(dpToPx(14));
+        etNominal.setBackground(gdInput);
+
+        LinearLayout.LayoutParams pNom = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        pNom.setMargins(0, dpToPx(6), 0, dpToPx(16));
+        etNominal.setLayoutParams(pNom);
+        formCard.addView(etNominal);
+
+        // 3. TANGGAL & WAKTU
+        LinearLayout dateRow = new LinearLayout(this);
+        dateRow.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout colTgl = new LinearLayout(this);
+        colTgl.setOrientation(LinearLayout.VERTICAL);
+        colTgl.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        
+        TextView lblTgl = new TextView(this);
+        lblTgl.setText("Tanggal");
+        lblTgl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        lblTgl.setTextColor(Color.parseColor("#94A3B8"));
+        colTgl.addView(lblTgl);
+
+        final EditText etTgl = new EditText(this);
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        etTgl.setText(sdfDate.format(new Date()));
+        etTgl.setTextColor(Color.WHITE);
+        etTgl.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        etTgl.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
+        etTgl.setBackground(gdInput);
+        LinearLayout.LayoutParams pSub = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        pSub.setMargins(0, dpToPx(6), dpToPx(6), dpToPx(16));
+        etTgl.setLayoutParams(pSub);
+        colTgl.addView(etTgl);
+        dateRow.addView(colTgl);
+
+        LinearLayout colWaktu = new LinearLayout(this);
+        colWaktu.setOrientation(LinearLayout.VERTICAL);
+        colWaktu.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+
+        TextView lblWaktu = new TextView(this);
+        lblWaktu.setText("Waktu");
+        lblWaktu.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        lblWaktu.setTextColor(Color.parseColor("#94A3B8"));
+        colWaktu.addView(lblWaktu);
+
+        final EditText etWaktu = new EditText(this);
+        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        etWaktu.setText(sdfTime.format(new Date()));
+        etWaktu.setTextColor(Color.WHITE);
+        etWaktu.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        etWaktu.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
+        etWaktu.setBackground(gdInput);
+        LinearLayout.LayoutParams pSub2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        pSub2.setMargins(dpToPx(6), dpToPx(6), 0, dpToPx(16));
+        etWaktu.setLayoutParams(pSub2);
+        colWaktu.addView(etWaktu);
+        dateRow.addView(colWaktu);
+
+        formCard.addView(dateRow);
+
+        // 4. SUMBER / KATEGORI DETAIL (DENGAN GAJI TGL 10 & OJOL SABTU-MINGGU)
+        TextView lblKat = new TextView(this);
+        lblKat.setText("Sumber / Detail Kategori");
+        lblKat.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        lblKat.setTextColor(Color.parseColor("#94A3B8"));
+        formCard.addView(lblKat);
+
+        final Spinner spinnerKat = new Spinner(this);
+        updateSpinnerOptions(spinnerKat, selectedType);
+        spinnerKat.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
+        spinnerKat.setBackground(gdInput);
+        LinearLayout.LayoutParams pSp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(48));
+        pSp.setMargins(0, dpToPx(6), 0, dpToPx(16));
+        spinnerKat.setLayoutParams(pSp);
+        formCard.addView(spinnerKat);
+
+        // 5. CATATAN
+        TextView lblKet = new TextView(this);
+        lblKet.setText("Catatan (Opsional)");
+        lblKet.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        lblKet.setTextColor(Color.parseColor("#94A3B8"));
+        formCard.addView(lblKet);
+
+        final EditText etKet = new EditText(this);
+        etKet.setHint("Contoh: Gaji bulanan tgl 10 / Grab weekend");
+        etKet.setHintTextColor(Color.parseColor("#475569"));
+        etKet.setTextColor(Color.WHITE);
+        etKet.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        etKet.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
+        etKet.setBackground(gdInput);
+        etKet.setLayoutParams(pNom);
+        formCard.addView(etKet);
+
+        // 6. TOMBOL SIMPAN TRANSAKSI
+        Button btnSave = new Button(this);
+        btnSave.setText("Simpan Transaksi");
+        btnSave.setTextColor(Color.parseColor("#0F172A"));
+        btnSave.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        btnSave.setTypeface(Typeface.DEFAULT_BOLD);
+
+        GradientDrawable gdBtn = new GradientDrawable();
+        gdBtn.setColor(Color.parseColor("#F59E0B"));
+        gdBtn.setCornerRadius(dpToPx(16));
+        btnSave.setBackground(gdBtn);
+
+        LinearLayout.LayoutParams lpBtn = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(52));
+        btnSave.setLayoutParams(lpBtn);
+        
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nomStr = etNominal.getText().toString();
+                if (!nomStr.isEmpty()) {
+                    long val = Long.parseLong(nomStr);
+                    long current = pref.getLong(selectedType, 0);
+                    pref.edit().putLong(selectedType, current + val).apply();
+
+                    String kat = spinnerKat.getSelectedItem().toString();
+                    String tgl = etTgl.getText().toString() + " " + etWaktu.getText().toString();
+                    String ket = etKet.getText().toString();
+
+                    String logs = pref.getString("logs", "");
+                    String tag = (selectedType.equals("in") || selectedType.equals("tabungan") || selectedType.equals("darurat")) ? "[+] " : "[-] ";
+                    String detail = kat + " (" + tgl + ")" + (ket.isEmpty() ? "" : " - " + ket);
+                    logs = tag + formatRupiah(val) + " — " + detail + "\n" + logs;
+                    pref.edit().putString("logs", logs).apply();
+
+                    Toast.makeText(MainActivity.this, "Transaksi Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
+                    renderTab(0);
+                } else {
+                    Toast.makeText(MainActivity.this, "Masukkan nominal terlebih dahulu!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        formCard.addView(btnSave);
+        containerContent.addView(formCard);
+    }
+
+    private Button createTypeButton(String label, final String typeKey) {
+        Button btn = new Button(this);
+        btn.setText(label);
+        btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        btn.setTypeface(Typeface.DEFAULT_BOLD);
 
         GradientDrawable gd = new GradientDrawable();
-        gd.setColor(Color.parseColor("#121721"));
-        gd.setCornerRadius(dpToPx(20));
+        if (selectedType.equals(typeKey)) {
+            btn.setTextColor(Color.parseColor("#0F172A"));
+            gd.setColor(Color.parseColor("#F59E0B"));
+        } else {
+            btn.setTextColor(Color.parseColor("#94A3B8"));
+            gd.setColor(Color.parseColor("#0B0E14"));
+        }
+        gd.setCornerRadius(dpToPx(14));
         btn.setBackground(gd);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dpToPx(90), 1.0f);
-        params.setMargins(dpToPx(6), 0, dpToPx(6), 0);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dpToPx(42), 1.0f);
+        params.setMargins(dpToPx(3), 0, dpToPx(3), 0);
         btn.setLayoutParams(params);
 
-        TextView tvSym = new TextView(this);
-        tvSym.setText(symbol);
-        tvSym.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        tvSym.setGravity(Gravity.CENTER);
-        tvSym.setTextColor(Color.parseColor("#F59E0B"));
-
-        GradientDrawable gdSym = new GradientDrawable();
-        gdSym.setColor(Color.parseColor("#2D1F0D"));
-        gdSym.setShape(GradientDrawable.OVAL);
-        tvSym.setBackground(gdSym);
-        
-        LinearLayout.LayoutParams pSym = new LinearLayout.LayoutParams(dpToPx(30), dpToPx(30));
-        pSym.setMargins(0, 0, 0, dpToPx(8));
-        tvSym.setLayoutParams(pSym);
-
-        TextView tvLabel = new TextView(this);
-        tvLabel.setText(label);
-        tvLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        tvLabel.setTypeface(Typeface.DEFAULT_BOLD);
-        tvLabel.setTextColor(Color.WHITE);
-
-        btn.addView(tvSym);
-        btn.addView(tvLabel);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showFormDialog(type);
+                selectedType = typeKey;
+                renderTab(0);
             }
         });
         return btn;
     }
 
-    private View createTargetCard(String title, long current, long max) {
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dpToPx(20), dpToPx(18), dpToPx(20), dpToPx(18));
-
-        GradientDrawable gd = new GradientDrawable();
-        gd.setColor(Color.parseColor("#121721"));
-        gd.setCornerRadius(dpToPx(20));
-        card.setBackground(gd);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, dpToPx(14));
-        card.setLayoutParams(params);
-
-        LinearLayout rowHead = new LinearLayout(this);
-        rowHead.setOrientation(LinearLayout.HORIZONTAL);
-
-        TextView tvTitle = new TextView(this);
-        tvTitle.setText(title);
-        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tvTitle.setTextColor(Color.WHITE);
-        tvTitle.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-
-        int pct = (max > 0) ? (int) ((current * 100) / max) : 0;
-        TextView tvPct = new TextView(this);
-        tvPct.setText(pct + "%");
-        tvPct.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        tvPct.setTypeface(Typeface.DEFAULT_BOLD);
-        tvPct.setTextColor(Color.parseColor("#F59E0B"));
-
-        rowHead.addView(tvTitle);
-        rowHead.addView(tvPct);
-
-        ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        pb.setMax((int) Math.max(max, 1));
-        pb.setProgress((int) current);
-        pb.setPadding(0, dpToPx(12), 0, dpToPx(12));
-
-        TextView tvVal = new TextView(this);
-        tvVal.setText(formatRupiah(current) + " dari " + formatRupiah(max));
-        tvVal.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvVal.setTextColor(Color.parseColor("#94A3B8"));
-
-        card.addView(rowHead);
-        card.addView(pb);
-        card.addView(tvVal);
-        return card;
+    private void updateSpinnerOptions(Spinner spinner, String type) {
+        String[] options;
+        if (type.equals("in")) {
+            options = new String[]{
+                "💰 Gaji Bulanan (Masuk Tanggal 10)", 
+                "🛵 Pendapatan Ojol Grab (Sabtu-Minggu)", 
+                "🛵 Pendapatan Ojol Gojek (Sabtu-Minggu)", 
+                "🛍 ShopeeFood (Sabtu-Minggu)", 
+                "➕ Pemasukan Lainnya"
+            };
+        } else if (type.equals("out")) {
+            options = new String[]{
+                "💳 Cicilan Rutin", 
+                "👥 Arisan", 
+                "👨‍👩‍👦 Uang Orang Tua", 
+                "👦 Uang Saku Adek (2 Orang)", 
+                "👶 Uang Jajan Keponakan (2 Orang)", 
+                "🛒 Kebutuhan Sehari-hari"
+            };
+        } else {
+            options = new String[]{"👛 Pos Tabungan", "🛡 Pos Dana Darurat"};
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, options);
+        spinner.setAdapter(adapter);
     }
 
     private void renderTransaksi() {
@@ -517,6 +660,43 @@ public class MainActivity extends Activity {
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
+        LinearLayout periodRow = new LinearLayout(this);
+        periodRow.setOrientation(LinearLayout.HORIZONTAL);
+        periodRow.setPadding(0, 0, 0, dpToPx(16));
+
+        String[] periods = {"Harian", "Mingguan", "Bulanan", "Tahunan"};
+        for (final String p : periods) {
+            TextView btnP = new TextView(this);
+            btnP.setText(p);
+            btnP.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            btnP.setGravity(Gravity.CENTER);
+            btnP.setTypeface(Typeface.DEFAULT_BOLD);
+            
+            GradientDrawable gd = new GradientDrawable();
+            if (p.equals(periodFilter)) {
+                btnP.setTextColor(Color.parseColor("#0F172A"));
+                gd.setColor(Color.parseColor("#F59E0B"));
+            } else {
+                btnP.setTextColor(Color.parseColor("#94A3B8"));
+                gd.setColor(Color.parseColor("#121721"));
+            }
+            gd.setCornerRadius(dpToPx(12));
+            btnP.setBackground(gd);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dpToPx(38), 1.0f);
+            lp.setMargins(dpToPx(2), 0, dpToPx(2), 0);
+            btnP.setLayoutParams(lp);
+            btnP.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    periodFilter = p;
+                    renderTab(2);
+                }
+            });
+            periodRow.addView(btnP);
+        }
+        containerContent.addView(periodRow);
+
         long in = pref.getLong("in", 0);
         long out = pref.getLong("out", 0);
         long tab = pref.getLong("tabungan", 0);
@@ -554,14 +734,14 @@ public class MainActivity extends Activity {
 
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createSimpleGridCard("Pendapatan", formatShort(in), "#10B981"));
-        row1.addView(createSimpleGridCard("Pengeluaran", formatShort(out), "#F59E0B"));
+        row1.addView(createSimpleGridCard("Pendapatan", formatRupiah(in), "#10B981"));
+        row1.addView(createSimpleGridCard("Pengeluaran", formatRupiah(out), "#F59E0B"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createSimpleGridCard("Tabungan", formatShort(tab), "#3B82F6"));
-        row2.addView(createSimpleGridCard("Darurat", formatShort(emg), "#F59E0B"));
+        row2.addView(createSimpleGridCard("Tabungan", formatRupiah(tab), "#3B82F6"));
+        row2.addView(createSimpleGridCard("Dana darurat", formatRupiah(emg), "#F59E0B"));
         containerContent.addView(row2);
     }
 
@@ -598,7 +778,7 @@ public class MainActivity extends Activity {
 
     private void renderPengaturan() {
         TextView tvSub = new TextView(this);
-        tvSub.setText("PENGATURAN APLIKASI");
+        tvSub.setText("PREFERENSI LOKAL");
         tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSub.setTypeface(Typeface.DEFAULT_BOLD);
         tvSub.setTextColor(Color.parseColor("#F59E0B"));
@@ -608,39 +788,176 @@ public class MainActivity extends Activity {
         tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
-        tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(18));
+        tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(16));
 
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
-        containerContent.addView(createCustomBox("Informasi Pembuat", "INCOMESTRUCT v1.0 — Dibuat oleh Helmi Zainul Pahmi"));
-        containerContent.addView(createCustomBox("Database", "Penyimpanan lokal aman berbasis perangkat (Offline)"));
+        // 1. TARGET KEUANGAN
+        TextView tvSec1 = new TextView(this);
+        tvSec1.setText("🚩 Target Keuangan");
+        tvSec1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvSec1.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec1.setTextColor(Color.WHITE);
+        tvSec1.setPadding(0, 0, 0, dpToPx(8));
+        containerContent.addView(tvSec1);
+
+        final EditText etTargetTab = createInput("Target Tabungan", String.valueOf(pref.getLong("target_tabungan", 10000000)));
+        final EditText etTargetEmg = createInput("Target Dana Darurat", String.valueOf(pref.getLong("target_darurat", 15000000)));
+        containerContent.addView(etTargetTab);
+        containerContent.addView(etTargetEmg);
+
+        // 2. PENGINGAT HARIAN
+        TextView tvSec2 = new TextView(this);
+        tvSec2.setText("🔔 Pengingat Penyisihan");
+        tvSec2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvSec2.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec2.setTextColor(Color.WHITE);
+        tvSec2.setPadding(0, dpToPx(16), 0, dpToPx(8));
+        containerContent.addView(tvSec2);
+
+        LinearLayout cardRemind = new LinearLayout(this);
+        cardRemind.setOrientation(LinearLayout.HORIZONTAL);
+        cardRemind.setGravity(Gravity.CENTER_VERTICAL);
+        cardRemind.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+
+        GradientDrawable gdRem = new GradientDrawable();
+        gdRem.setColor(Color.parseColor("#121721"));
+        gdRem.setCornerRadius(dpToPx(16));
+        cardRemind.setBackground(gdRem);
+
+        LinearLayout colRem = new LinearLayout(this);
+        colRem.setOrientation(LinearLayout.VERTICAL);
+        colRem.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+
+        TextView tvRemTitle = new TextView(this);
+        tvRemTitle.setText("Pengingat Harian (Gaji & Ojol)");
+        tvRemTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvRemTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvRemTitle.setTextColor(Color.WHITE);
+
+        TextView tvRemSub = new TextView(this);
+        tvRemSub.setText("Setiap hari pukul 20:00");
+        tvRemSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        tvRemSub.setTextColor(Color.parseColor("#64748B"));
+
+        colRem.addView(tvRemTitle);
+        colRem.addView(tvRemSub);
+
+        Switch sw = new Switch(this);
+        sw.setChecked(pref.getBoolean("reminder_active", false));
+        sw.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
+                pref.edit().putBoolean("reminder_active", isChecked).apply();
+            }
+        });
+
+        cardRemind.addView(colRem);
+        cardRemind.addView(sw);
+        containerContent.addView(cardRemind);
+
+        // 3. DAFTAR CUSTOM
+        TextView tvSec3 = new TextView(this);
+        tvSec3.setText("≡ Daftar Custom Sumber");
+        tvSec3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvSec3.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec3.setTextColor(Color.WHITE);
+        tvSec3.setPadding(0, dpToPx(16), 0, dpToPx(8));
+        containerContent.addView(tvSec3);
+
+        containerContent.addView(createCustomBox("Sumber Pendapatan", "Gaji Tgl 10 · Grab Weekend · Gojek Weekend · ShopeeFood"));
+        containerContent.addView(createCustomBox("Kategori Pengeluaran", "Cicilan · Arisan · Orang Tua · Adek · Keponakan · Kebutuhan"));
+
+        // 4. KEAMANAN
+        TextView tvSec4 = new TextView(this);
+        tvSec4.setText("🔒 Keamanan Aplikasi");
+        tvSec4.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvSec4.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec4.setTextColor(Color.WHITE);
+        tvSec4.setPadding(0, dpToPx(16), 0, dpToPx(8));
+        containerContent.addView(tvSec4);
+
+        LinearLayout cardPin = new LinearLayout(this);
+        cardPin.setOrientation(LinearLayout.VERTICAL);
+        cardPin.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+
+        GradientDrawable gdPin = new GradientDrawable();
+        gdPin.setColor(Color.parseColor("#121721"));
+        gdPin.setCornerRadius(dpToPx(16));
+        cardPin.setBackground(gdPin);
+
+        TextView tvPinTitle = new TextView(this);
+        tvPinTitle.setText("Aktifkan PIN");
+        tvPinTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvPinTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvPinTitle.setTextColor(Color.WHITE);
+
+        final EditText etPin = createInput("Buat PIN (4-6 angka)", pref.getString("app_pin", ""));
+        etPin.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+
+        Button btnPin = new Button(this);
+        btnPin.setText("Simpan PIN");
+        btnPin.setTextColor(Color.parseColor("#0F172A"));
+        btnPin.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        btnPin.setTypeface(Typeface.DEFAULT_BOLD);
+
+        GradientDrawable gdBtnPin = new GradientDrawable();
+        gdBtnPin.setColor(Color.parseColor("#F59E0B"));
+        gdBtnPin.setCornerRadius(dpToPx(12));
+        btnPin.setBackground(gdBtnPin);
+
+        btnPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String p = etPin.getText().toString();
+                if (!p.isEmpty()) {
+                    pref.edit().putString("app_pin", p).apply();
+                    Toast.makeText(MainActivity.this, "PIN Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        cardPin.addView(tvPinTitle);
+        cardPin.addView(etPin);
+        cardPin.addView(btnPin);
+        containerContent.addView(cardPin);
+
+        // 5. INFO PEMBUAT
+        TextView tvAuthor = new TextView(this);
+        tvAuthor.setText("\nINCOMESTRUCT v1.0\nDibuat oleh Helmi Zainul Pahmi");
+        tvAuthor.setTextColor(Color.parseColor("#F59E0B"));
+        tvAuthor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        tvAuthor.setTypeface(Typeface.DEFAULT_BOLD);
+        tvAuthor.setGravity(Gravity.CENTER_HORIZONTAL);
+        tvAuthor.setPadding(0, dpToPx(20), 0, 0);
+        containerContent.addView(tvAuthor);
     }
 
     private View createCustomBox(String title, String sub) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dpToPx(18), dpToPx(16), dpToPx(18), dpToPx(16));
+        card.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
 
         GradientDrawable gd = new GradientDrawable();
         gd.setColor(Color.parseColor("#121721"));
-        gd.setCornerRadius(dpToPx(18));
+        gd.setCornerRadius(dpToPx(16));
         card.setBackground(gd);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, 0, 0, dpToPx(12));
+        lp.setMargins(0, 0, 0, dpToPx(8));
         card.setLayoutParams(lp);
 
         TextView tvTitle = new TextView(this);
         tvTitle.setText(title);
-        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
 
         TextView tvSub = new TextView(this);
         tvSub.setText(sub);
-        tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvSub.setTextColor(Color.parseColor("#94A3B8"));
+        tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        tvSub.setTextColor(Color.parseColor("#64748B"));
         tvSub.setPadding(0, dpToPx(4), 0, 0);
 
         card.addView(tvTitle);
@@ -648,107 +965,30 @@ public class MainActivity extends Activity {
         return card;
     }
 
+    private EditText createInput(String hint, String val) {
+        EditText et = new EditText(this);
+        et.setHint(hint);
+        et.setText(val);
+        et.setHintTextColor(Color.parseColor("#64748B"));
+        et.setTextColor(Color.WHITE);
+        et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        et.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(Color.parseColor("#0B0E14"));
+        gd.setCornerRadius(dpToPx(14));
+        et.setBackground(gd);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, dpToPx(6), 0, dpToPx(8));
+        et.setLayoutParams(lp);
+        return et;
+    }
+
     private String formatRupiah(long amount) {
         Locale localeID = new Locale("in", "ID");
         NumberFormat format = NumberFormat.getCurrencyInstance(localeID);
         return format.format(amount).replace(",00", "");
-    }
-
-    private String formatShort(long amount) {
-        if (amount >= 1000000000) return "Rp" + (amount / 1000000000) + " M";
-        if (amount >= 1000000) return "Rp" + (amount / 1000000) + " jt";
-        if (amount >= 1000) return "Rp" + (amount / 1000) + " rb";
-        return "Rp" + amount;
-    }
-
-    private void showFormDialog(final String type) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("CATAT " + type.toUpperCase());
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(16));
-
-        final Spinner spinnerCategory = new Spinner(this);
-        String[] options;
-        if (type.equals("in")) {
-            options = new String[]{
-                "💰 Gaji Bulanan (Masuk Tgl 10)", 
-                "🛵 Ojol Grab (Sabtu-Minggu)", 
-                "🛵 Ojol Gojek (Sabtu-Minggu)", 
-                "🛍 ShopeeFood", 
-                "➕ Pemasukan Lainnya"
-            };
-        } else if (type.equals("out")) {
-            options = new String[]{
-                "💳 Cicilan Rutin", 
-                "👥 Arisan", 
-                "👨‍👩‍👦 Uang Orang Tua", 
-                "👦 Uang Saku Adek (2 Orang)", 
-                "👶 Uang Jajan Keponakan (2 Orang)", 
-                "🛒 Kebutuhan Sehari-hari"
-            };
-        } else {
-            options = new String[]{"👛 Pos Tabungan", "🛡 Pos Dana Darurat"};
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, options);
-        spinnerCategory.setAdapter(adapter);
-        layout.addView(spinnerCategory);
-
-        final EditText inputTanggal = new EditText(this);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        inputTanggal.setText(sdf.format(new Date()));
-        inputTanggal.setHint("Tanggal (DD/MM/YYYY)");
-        inputTanggal.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        inputTanggal.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
-        
-        LinearLayout.LayoutParams pInp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        pInp.setMargins(0, dpToPx(12), 0, 0);
-        inputTanggal.setLayoutParams(pInp);
-        layout.addView(inputTanggal);
-
-        final EditText inputJumlah = new EditText(this);
-        inputJumlah.setHint("Nominal (Rp)");
-        inputJumlah.setInputType(InputType.TYPE_CLASS_NUMBER);
-        inputJumlah.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        inputJumlah.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
-        inputJumlah.setLayoutParams(pInp);
-        layout.addView(inputJumlah);
-
-        final EditText inputKet = new EditText(this);
-        inputKet.setHint("Catatan tambahan (Opsional)");
-        inputKet.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        inputKet.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
-        inputKet.setLayoutParams(pInp);
-        layout.addView(inputKet);
-
-        builder.setView(layout);
-
-        builder.setPositiveButton("Simpan", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String nom = inputJumlah.getText().toString();
-                String kat = spinnerCategory.getSelectedItem().toString();
-                String tgl = inputTanggal.getText().toString();
-                String ket = inputKet.getText().toString();
-
-                if (!nom.isEmpty()) {
-                    long val = Long.parseLong(nom);
-                    long current = pref.getLong(type, 0);
-                    pref.edit().putLong(type, current + val).apply();
-
-                    String logs = pref.getString("logs", "");
-                    String tag = (type.equals("in") || type.equals("tabungan") || type.equals("darurat")) ? "[+] " : "[-] ";
-                    String detail = kat + " (" + tgl + ")" + (ket.isEmpty() ? "" : " - " + ket);
-                    logs = tag + formatRupiah(val) + " — " + detail + "\n" + logs;
-                    pref.edit().putString("logs", logs).apply();
-
-                    renderTab(currentTab);
-                }
-            }
-        });
-        builder.setNegativeButton("Batal", null);
-        builder.show();
     }
 }
