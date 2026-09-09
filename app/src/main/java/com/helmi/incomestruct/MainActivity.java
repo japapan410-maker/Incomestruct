@@ -134,7 +134,6 @@ public class MainActivity extends Activity {
         tvSub.setTypeface(Typeface.DEFAULT_BOLD);
         tvSub.setTextColor(Color.parseColor("#F59E0B"));
 
-        // Nama pemilik diambil otomatis dari SharedPreferences (bisa diubah di menu Pengaturan)
         String ownerName = pref.getString("owner_name", "Helmi Zainul");
 
         TextView tvTitle = new TextView(this);
@@ -176,7 +175,7 @@ public class MainActivity extends Activity {
         tvSaldo.setPadding(0, dpToPx(6), 0, dpToPx(6));
 
         TextView tvSubSaldo = new TextView(this);
-        tvSubSaldo.setText("Gaji tgl 10 & Ojol akhir pekan terkelola aman");
+        tvSubSaldo.setText("Manajemen keuangan fleksibel & aman");
         tvSubSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSubSaldo.setTextColor(Color.parseColor("#78350F"));
 
@@ -209,7 +208,7 @@ public class MainActivity extends Activity {
         tvCatat.setPadding(0, dpToPx(22), 0, dpToPx(4));
 
         TextView tvCatatSub = new TextView(this);
-        tvCatatSub.setText("Catat Gaji Tgl 10 & Ojol Sabtu Minggu di sini");
+        tvCatatSub.setText("Catat pemasukan dan pengeluaran harian");
         tvCatatSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         tvCatatSub.setTextColor(Color.parseColor("#64748B"));
         tvCatatSub.setPadding(0, 0, 0, dpToPx(12));
@@ -324,6 +323,7 @@ public class MainActivity extends Activity {
         etNominal.setLayoutParams(pNom);
         formCard.addView(etNominal);
 
+        // KEMBALIKAN TANGGAL & WAKTU DI FORM TRANSAKSI
         LinearLayout dateRow = new LinearLayout(this);
         dateRow.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -368,7 +368,7 @@ public class MainActivity extends Activity {
         etWaktu.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
         etWaktu.setBackground(gdInput);
         LinearLayout.LayoutParams pSub2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        pSub2.setMargins(0, dpToPx(6), 0, dpToPx(16));
+        pSub2.setMargins(dpToPx(6), dpToPx(6), 0, dpToPx(16));
         etWaktu.setLayoutParams(pSub2);
         colWaktu.addView(etWaktu);
         dateRow.addView(colWaktu);
@@ -397,7 +397,7 @@ public class MainActivity extends Activity {
         formCard.addView(lblKet);
 
         final EditText etKet = new EditText(this);
-        etKet.setHint("Contoh: Gaji bulanan tgl 10 / Grab weekend");
+        etKet.setHint("Catatan tambahan");
         etKet.setHintTextColor(Color.parseColor("#475569"));
         etKet.setTextColor(Color.WHITE);
         etKet.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -486,23 +486,23 @@ public class MainActivity extends Activity {
         String[] options;
         if (type.equals("in")) {
             options = new String[]{
-                "💰 Gaji Bulanan (Masuk Tanggal 10)", 
-                "🛵 Pendapatan Ojol Grab (Sabtu-Minggu)", 
-                "🛵 Pendapatan Ojol Gojek (Sabtu-Minggu)", 
-                "🛍 ShopeeFood (Sabtu-Minggu)", 
-                "➕ Pemasukan Lainnya"
+                "Gaji", 
+                "Pendapatan Grab", 
+                "Pendapatan Gojek", 
+                "ShopeeFood", 
+                "Pemasukan Lainnya"
             };
         } else if (type.equals("out")) {
             options = new String[]{
-                "💳 Cicilan Rutin", 
-                "👥 Arisan", 
-                "👨‍👩‍👦 Uang Orang Tua", 
-                "👦 Uang Saku Adek (2 Orang)", 
-                "👶 Uang Jajan Keponakan (2 Orang)", 
-                "🛒 Kebutuhan Sehari-hari"
+                "Cicilan Rutin", 
+                "Arisan", 
+                "Uang Orang Tua", 
+                "Uang Saku Adek", 
+                "Uang Jajan Keponakan", 
+                "Kebutuhan Sehari-hari"
             };
         } else {
-            options = new String[]{"👛 Pos Tabungan", "🛡 Pos Dana Darurat"};
+            options = new String[]{"Pos Tabungan", "Pos Dana Darurat"};
         }
         
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, options) {
@@ -868,7 +868,6 @@ public class MainActivity extends Activity {
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
-        // 0. UBAH NAMA PEMILIK PROFIL
         TextView tvSecName = new TextView(this);
         tvSecName.setText("👤 Nama Profil Pengguna");
         tvSecName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -912,7 +911,6 @@ public class MainActivity extends Activity {
         cardName.addView(btnSaveName);
         containerContent.addView(cardName);
 
-        // 1. TARGET KEUANGAN
         TextView tvSec1 = new TextView(this);
         tvSec1.setText("🚩 Target Keuangan");
         tvSec1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -926,7 +924,6 @@ public class MainActivity extends Activity {
         containerContent.addView(etTargetTab);
         containerContent.addView(etTargetEmg);
 
-        // 2. PENGINGAT HARIAN
         TextView tvSec2 = new TextView(this);
         tvSec2.setText("🔔 Pengingat Penyisihan");
         tvSec2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -950,7 +947,7 @@ public class MainActivity extends Activity {
         colRem.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
 
         TextView tvRemTitle = new TextView(this);
-        tvRemTitle.setText("Pengingat Harian (Gaji & Ojol)");
+        tvRemTitle.setText("Pengingat Harian (Pencatatan Keuangan)");
         tvRemTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvRemTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvRemTitle.setTextColor(Color.WHITE);
@@ -976,7 +973,6 @@ public class MainActivity extends Activity {
         cardRemind.addView(sw);
         containerContent.addView(cardRemind);
 
-        // 3. DAFTAR CUSTOM
         TextView tvSec3 = new TextView(this);
         tvSec3.setText("≡ Daftar Custom Sumber");
         tvSec3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -985,10 +981,9 @@ public class MainActivity extends Activity {
         tvSec3.setPadding(0, dpToPx(16), 0, dpToPx(8));
         containerContent.addView(tvSec3);
 
-        containerContent.addView(createCustomBox("Sumber Pendapatan", "Gaji Tgl 10 · Grab Weekend · Gojek Weekend · ShopeeFood"));
+        containerContent.addView(createCustomBox("Sumber Pendapatan", "Gaji · Grab · Gojek · ShopeeFood"));
         containerContent.addView(createCustomBox("Kategori Pengeluaran", "Cicilan · Arisan · Orang Tua · Adek · Keponakan · Kebutuhan"));
 
-        // 4. KEAMANAN
         TextView tvSec4 = new TextView(this);
         tvSec4.setText("🔒 Keamanan Aplikasi");
         tvSec4.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -1042,7 +1037,6 @@ public class MainActivity extends Activity {
         cardPin.addView(btnPin);
         containerContent.addView(cardPin);
 
-        // 5. INFO PEMBUAT
         TextView tvAuthor = new TextView(this);
         tvAuthor.setText("\nINCOMESTRUCT v1.0\nDibuat oleh Helmi Zainul Pahmi");
         tvAuthor.setTextColor(Color.parseColor("#F59E0B"));
