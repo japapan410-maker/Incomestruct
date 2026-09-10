@@ -79,7 +79,8 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(10), 0, dpToPx(14));
 
         String[] tabs = {"Beranda", "Saldo", "Transaksi", "Rekap", "Pengaturan"};
-        String[] textIcons = {"⌂", "💰", "⇆", "📊", "⚙"}; 
+        // Menggunakan ikon teks monokrom yang selaras (⌂, $, ⇆, 📊, ⚙)
+        String[] textIcons = {"⌂", "$", "⇆", "📊", "⚙"}; 
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -121,14 +122,14 @@ public class MainActivity extends Activity {
         containerContent.removeAllViews();
         containerContent.setPadding(dpToPx(20), dpToPx(28), dpToPx(20), dpToPx(28));
 
-        if (tabIndex == 0) renderBeranda();      // Tab 1: Beranda (Arus Harian + Form Catat)
-        else if (tabIndex == 1) renderSaldo();     // Tab 2: Saldo (Ringkasan Keuangan)
+        if (tabIndex == 0) renderBeranda();      // Tab 1: Beranda
+        else if (tabIndex == 1) renderSaldo();     // Tab 2: Saldo
         else if (tabIndex == 2) renderTransaksi(); // Tab 3: Transaksi
         else if (tabIndex == 3) renderRekap();     // Tab 4: Rekap
         else renderPengaturan();                   // Tab 5: Pengaturan Lengkap
     }
 
-    // --- TAB 1: BERANDA (ARUS HARIAN + FORM CATAT) ---
+    // --- TAB 1: BERANDA ---
     private void renderBeranda() {
         TextView tvSub = new TextView(this);
         tvSub.setText("ARUS KEUANGAN HARIAN");
@@ -190,16 +191,17 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
+        // Menggunakan simbol monokrom bersih (+, -, T, D) tanpa warna-warni emoji
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "📈"));
-        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "📉"));
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "+"));
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "-"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "💰"));
-        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡️"));
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "T"));
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "!"));
         containerContent.addView(row2);
 
         TextView tvCatat = new TextView(this);
@@ -221,7 +223,7 @@ public class MainActivity extends Activity {
         renderCatatFormUI();
     }
 
-    // --- TAB 2: SALDO (RINGKASAN UTAMA KESELURUHAN) ---
+    // --- TAB 2: SALDO ---
     private void renderSaldo() {
         TextView tvSub = new TextView(this);
         tvSub.setText("RINGKASAN KESELURUHAN");
@@ -283,18 +285,18 @@ public class MainActivity extends Activity {
 
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "📈"));
-        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "📉"));
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "+"));
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "-"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "💰"));
-        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡️"));
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "T"));
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "!"));
         containerContent.addView(row2);
     }
 
-    private View createStatCard(String title, String val, String colorHex, String emojiIcon) {
+    private View createStatCard(String title, String val, String colorHex, String symbolText) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
@@ -308,10 +310,12 @@ public class MainActivity extends Activity {
         params.setMargins(dpToPx(6), 0, dpToPx(6), dpToPx(12));
         card.setLayoutParams(params);
 
-        TextView tvEmoji = new TextView(this);
-        tvEmoji.setText(emojiIcon);
-        tvEmoji.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-        tvEmoji.setPadding(0, 0, 0, dpToPx(4));
+        TextView tvSymbol = new TextView(this);
+        tvSymbol.setText(symbolText);
+        tvSymbol.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        tvSymbol.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSymbol.setTextColor(Color.parseColor("#64748B"));
+        tvSymbol.setPadding(0, 0, 0, dpToPx(4));
 
         TextView label = new TextView(this);
         label.setText(title);
@@ -325,7 +329,7 @@ public class MainActivity extends Activity {
         valueTv.setTextColor(Color.parseColor(colorHex));
         valueTv.setPadding(0, dpToPx(4), 0, 0);
 
-        card.addView(tvEmoji);
+        card.addView(tvSymbol);
         card.addView(label);
         card.addView(valueTv);
         return card;
@@ -607,7 +611,7 @@ public class MainActivity extends Activity {
         spinner.setAdapter(adapter);
     }
 
-    // --- TAB 3: TRANSAKSI (Bisa Hapus & Kurangi Saldo) ---
+    // --- TAB 3: TRANSAKSI ---
     private void renderTransaksi() {
         TextView tvSub = new TextView(this);
         tvSub.setText("RIWAYAT KEUANGAN");
@@ -697,8 +701,10 @@ public class MainActivity extends Activity {
                 card.setLayoutParams(pCard);
 
                 TextView tvIcon = new TextView(this);
-                tvIcon.setText(item.contains("[+]") ? "📈" : "📉");
-                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                tvIcon.setText(item.contains("[+]") ? "+" : "-");
+                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                tvIcon.setTypeface(Typeface.DEFAULT_BOLD);
+                tvIcon.setTextColor(Color.parseColor(item.contains("[+]") ? "#10B981" : "#EF4444"));
                 
                 LinearLayout.LayoutParams pIcon = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 pIcon.setMargins(0, 0, dpToPx(14), 0);
@@ -985,7 +991,7 @@ public class MainActivity extends Activity {
         return row;
     }
 
-    // --- TAB 5: PENGATURAN (LENGKAP SEMUA FITUR) ---
+    // --- TAB 5: PENGATURAN ---
     private void renderPengaturan() {
         TextView tvSub = new TextView(this);
         tvSub.setText("PREFERENSI LOKAL");
@@ -1003,7 +1009,6 @@ public class MainActivity extends Activity {
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
-        // 1. Nama Profil
         TextView tvSecName = new TextView(this);
         tvSecName.setText("👤 Nama Profil Pengguna");
         tvSecName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -1043,15 +1048,14 @@ public class MainActivity extends Activity {
         gdCardName.setColor(Color.parseColor("#121721"));
         gdCardName.setCornerRadius(dpToPx(16));
         cardName.setBackground(gdCardName);
-        cardName.addView(etOwnerName);
-        cardName.addView(btnSaveName);
         
         LinearLayout.LayoutParams pCardMargin = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         pCardMargin.setMargins(0, 0, 0, dpToPx(14));
         cardName.setLayoutParams(pCardMargin);
+        cardName.addView(etOwnerName);
+        cardName.addView(btnSaveName);
         containerContent.addView(cardName);
 
-        // 2. Target Keuangan
         TextView tvSec1 = new TextView(this);
         tvSec1.setText("🚩 Target Keuangan");
         tvSec1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -1094,7 +1098,6 @@ public class MainActivity extends Activity {
         cardTarget.addView(btnSaveTarget);
         containerContent.addView(cardTarget);
 
-        // 3. Pengingat Harian
         TextView tvSec2 = new TextView(this);
         tvSec2.setText("🔔 Pengingat Penyisihan");
         tvSec2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -1141,7 +1144,6 @@ public class MainActivity extends Activity {
         cardRemind.addView(sw);
         containerContent.addView(cardRemind);
 
-        // 4. Daftar Custom Sumber
         TextView tvSec3 = new TextView(this);
         tvSec3.setText("≡ Daftar Custom Sumber");
         tvSec3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -1153,7 +1155,6 @@ public class MainActivity extends Activity {
         containerContent.addView(createCustomBox("Sumber Pendapatan / Tabungan", "Gaji · Grab · Gojek · ShopeeFood"));
         containerContent.addView(createCustomBox("Kategori Pengeluaran", "Ketik nama pengeluaran sendiri secara bebas"));
 
-        // 5. Keamanan Aplikasi (PIN)
         TextView tvSec4 = new TextView(this);
         tvSec4.setText("🔒 Keamanan Aplikasi");
         tvSec4.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
