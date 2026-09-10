@@ -1,7 +1,9 @@
 package com.helmi.incomestruct;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -74,10 +76,10 @@ public class MainActivity extends Activity {
         LinearLayout nav = new LinearLayout(this);
         nav.setOrientation(LinearLayout.HORIZONTAL);
         nav.setBackgroundColor(Color.parseColor("#0B0E14"));
-        nav.setPadding(0, dpToPx(12), 0, dpToPx(16));
+        nav.setPadding(0, dpToPx(10), 0, dpToPx(14));
 
-        String[] tabs = {"Beranda", "Transaksi", "Rekap", "Pengaturan"};
-        String[] textIcons = {"⌂", "⇆", "📊", "⚙"}; 
+        String[] tabs = {"Beranda", "Saldo", "Transaksi", "Rekap", "Pengaturan"};
+        String[] textIcons = {"📅", "💰", "⇆", "📊", "⚙"}; 
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -87,14 +89,14 @@ public class MainActivity extends Activity {
 
             TextView tvIcon = new TextView(this);
             tvIcon.setText(textIcons[i]);
-            tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+            tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             tvIcon.setGravity(Gravity.CENTER);
             tvIcon.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
             itemLayout.addView(tvIcon);
 
             TextView tvText = new TextView(this);
             tvText.setText(tabs[i]);
-            tvText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+            tvText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
             tvText.setGravity(Gravity.CENTER);
             tvText.setTypeface(Typeface.DEFAULT_BOLD);
             tvText.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
@@ -119,15 +121,17 @@ public class MainActivity extends Activity {
         containerContent.removeAllViews();
         containerContent.setPadding(dpToPx(20), dpToPx(28), dpToPx(20), dpToPx(28));
 
-        if (tabIndex == 0) renderBeranda();
-        else if (tabIndex == 1) renderTransaksi();
-        else if (tabIndex == 2) renderRekap();
-        else renderPengaturan();
+        if (tabIndex == 0) renderBeranda();      // Tab 1: Beranda (Arus Keuangan Harian)
+        else if (tabIndex == 1) renderSaldo();     // Tab 2: Saldo (Ringkasan Keuangan)
+        else if (tabIndex == 2) renderTransaksi(); // Tab 3: Transaksi
+        else if (tabIndex == 3) renderRekap();     // Tab 4: Rekap
+        else renderPengaturan();                   // Tab 5: Pengaturan
     }
 
+    // --- TAB 1: BERANDA (ARUS KEUANGAN HARIAN) ---
     private void renderBeranda() {
         TextView tvSub = new TextView(this);
-        tvSub.setText("KEUANGAN PRIBADI");
+        tvSub.setText("PENCATATAN HARIAN");
         tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSub.setTypeface(Typeface.DEFAULT_BOLD);
         tvSub.setTextColor(Color.parseColor("#F59E0B"));
@@ -135,7 +139,28 @@ public class MainActivity extends Activity {
         String ownerName = pref.getString("owner_name", "Helmi Zainul");
 
         TextView tvTitle = new TextView(this);
-        tvTitle.setText("Halo, " + ownerName);
+        tvTitle.setText("Arus Harian, " + ownerName);
+        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvTitle.setTextColor(Color.WHITE);
+        tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(18));
+
+        containerContent.addView(tvSub);
+        containerContent.addView(tvTitle);
+
+        renderCatatFormUI();
+    }
+
+    // --- TAB 2: SALDO (RINGKASAN UTAMA) ---
+    private void renderSaldo() {
+        TextView tvSub = new TextView(this);
+        tvSub.setText("RINGKASAN UTAMA");
+        tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvSub.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSub.setTextColor(Color.parseColor("#F59E0B"));
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("Saldo");
         tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
@@ -167,7 +192,7 @@ public class MainActivity extends Activity {
 
         TextView tvSaldo = new TextView(this);
         tvSaldo.setText(formatRupiah(saldo));
-        tvSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
+        tvSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
         tvSaldo.setTypeface(Typeface.DEFAULT_BOLD);
         tvSaldo.setTextColor(Color.parseColor("#0F172A"));
         tvSaldo.setPadding(0, dpToPx(6), 0, dpToPx(6));
@@ -188,39 +213,21 @@ public class MainActivity extends Activity {
 
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatShort(in), "#10B981", "📈"));
-        row1.addView(createStatCard("Pengeluaran", formatShort(out), "#F59E0B", "📉"));
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "📈"));
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "📉"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "💰"));
-        row2.addView(createStatCard("Dana darurat", formatShort(emg), "#F59E0B", "🛡️"));
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "💰"));
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡️"));
         containerContent.addView(row2);
-
-        TextView tvCatat = new TextView(this);
-        tvCatat.setText("Catat Transaksi");
-        tvCatat.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        tvCatat.setTypeface(Typeface.DEFAULT_BOLD);
-        tvCatat.setTextColor(Color.WHITE);
-        tvCatat.setPadding(0, dpToPx(22), 0, dpToPx(4));
-
-        TextView tvCatatSub = new TextView(this);
-        tvCatatSub.setText("Catat pemasukan dan pengeluaran harian");
-        tvCatatSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        tvCatatSub.setTextColor(Color.parseColor("#64748B"));
-        tvCatatSub.setPadding(0, 0, 0, dpToPx(12));
-
-        containerContent.addView(tvCatat);
-        containerContent.addView(tvCatatSub);
-
-        renderCatatFormUI();
     }
 
     private View createStatCard(String title, String val, String colorHex, String emojiIcon) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dpToPx(18), dpToPx(18), dpToPx(18), dpToPx(18));
+        card.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
 
         GradientDrawable gd = new GradientDrawable();
         gd.setColor(Color.parseColor("#121721"));
@@ -233,17 +240,17 @@ public class MainActivity extends Activity {
 
         TextView tvEmoji = new TextView(this);
         tvEmoji.setText(emojiIcon);
-        tvEmoji.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-        tvEmoji.setPadding(0, 0, 0, dpToPx(6));
+        tvEmoji.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        tvEmoji.setPadding(0, 0, 0, dpToPx(4));
 
         TextView label = new TextView(this);
         label.setText(title);
-        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         label.setTextColor(Color.parseColor("#94A3B8"));
 
         TextView valueTv = new TextView(this);
         valueTv.setText(val);
-        valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         valueTv.setTypeface(Typeface.DEFAULT_BOLD);
         valueTv.setTextColor(Color.parseColor(colorHex));
         valueTv.setPadding(0, dpToPx(4), 0, 0);
@@ -450,12 +457,14 @@ public class MainActivity extends Activity {
 
                     String logs = pref.getString("logs", "");
                     String tag = (selectedType.equals("in") || selectedType.equals("tabungan") || selectedType.equals("darurat")) ? "[+] " : "[-] ";
-                    String detail = kat + " (" + tgl + ")" + (ket.isEmpty() ? "" : " - " + ket);
-                    logs = tag + formatRupiah(val) + " — " + detail + "\n" + logs;
+                    String detail = kat + " (" + tgl + ")" + (ket.isEmpty() ? "" : " - " + ket) + " [" + selectedType + "]";
+                    logs = tag + val + " — " + detail + "\n" + logs;
                     pref.edit().putString("logs", logs).apply();
 
                     Toast.makeText(MainActivity.this, "Transaksi Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
-                    renderTab(0);
+                    etNominal.setText("");
+                    etKatManual.setText("");
+                    etKet.setText("");
                 } else {
                     Toast.makeText(MainActivity.this, "Masukkan nominal terlebih dahulu!", Toast.LENGTH_SHORT).show();
                 }
@@ -528,6 +537,7 @@ public class MainActivity extends Activity {
         spinner.setAdapter(adapter);
     }
 
+    // --- TAB 3: TRANSAKSI (Bisa Hapus & Kurangi Saldo Otomatis) ---
     private void renderTransaksi() {
         TextView tvSub = new TextView(this);
         tvSub.setText("RIWAYAT KEUANGAN");
@@ -541,8 +551,15 @@ public class MainActivity extends Activity {
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
 
+        TextView tvHintDelete = new TextView(this);
+        tvHintDelete.setText("💡 Ketuk salah satu transaksi untuk menghapusnya jika salah input.");
+        tvHintDelete.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        tvHintDelete.setTextColor(Color.parseColor("#64748B"));
+        tvHintDelete.setPadding(0, dpToPx(4), 0, dpToPx(12));
+
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
+        containerContent.addView(tvHintDelete);
 
         EditText etSearch = new EditText(this);
         etSearch.setHint("🔍 Cari kategori atau catatan...");
@@ -557,7 +574,7 @@ public class MainActivity extends Activity {
         etSearch.setBackground(gdSearch);
 
         LinearLayout.LayoutParams pSearch = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        pSearch.setMargins(0, dpToPx(14), 0, dpToPx(14));
+        pSearch.setMargins(0, 0, 0, dpToPx(14));
         etSearch.setLayoutParams(pSearch);
 
         etSearch.addTextChangedListener(new TextWatcher() {
@@ -576,7 +593,7 @@ public class MainActivity extends Activity {
         View existingList = containerContent.findViewWithTag("trans_list");
         if (existingList != null) containerContent.removeView(existingList);
 
-        LinearLayout listLayout = new LinearLayout(this);
+        final LinearLayout listLayout = new LinearLayout(this);
         listLayout.setTag("trans_list");
         listLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -589,8 +606,9 @@ public class MainActivity extends Activity {
             tvEmpty.setPadding(0, dpToPx(16), 0, 0);
             listLayout.addView(tvEmpty);
         } else {
-            String[] items = logs.split("\n");
-            for (String item : items) {
+            final String[] items = logs.split("\n");
+            for (int i = 0; i < items.length; i++) {
+                final String item = items[i];
                 if (item.trim().isEmpty()) continue;
                 if (!searchQuery.isEmpty() && !item.toLowerCase().contains(searchQuery)) continue;
 
@@ -620,23 +638,32 @@ public class MainActivity extends Activity {
                 colText.setOrientation(LinearLayout.VERTICAL);
                 colText.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
 
+                String rawPart = item.split("—")[1];
+                String cleanDetail = rawPart.replaceAll("\\[.*?\\]", "").trim();
+
                 TextView tvTitle = new TextView(this);
-                tvTitle.setText(item.replaceAll("\\[\\+\\]|\\[\\-\\]", "").split("—")[1].trim());
-                tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                tvTitle.setText(cleanDetail);
+                tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                 tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
                 tvTitle.setTextColor(Color.WHITE);
 
                 TextView tvSub = new TextView(this);
-                tvSub.setText("Tercatat di perangkat");
-                tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                tvSub.setText("Ketuk untuk hapus transaksi");
+                tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
                 tvSub.setTextColor(Color.parseColor("#64748B"));
 
                 colText.addView(tvTitle);
                 colText.addView(tvSub);
 
+                String rawNom = item.split("—")[0].replaceAll("\\[\\+\\]|\\[\\-\\]", "").trim();
+                long nominalVal = 0;
+                try {
+                    nominalVal = Long.parseLong(rawNom);
+                } catch(Exception e) { nominalVal = 0; }
+
                 TextView tvVal = new TextView(this);
-                tvVal.setText((item.contains("[+]") ? "+" : "-") + item.split("—")[0].replaceAll("\\[\\+\\]|\\[\\-\\]", "").trim());
-                tvVal.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                tvVal.setText((item.contains("[+]") ? "+" : "-") + formatRupiah(nominalVal));
+                tvVal.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                 tvVal.setTypeface(Typeface.DEFAULT_BOLD);
                 tvVal.setTextColor(Color.parseColor(item.contains("[+]") ? "#10B981" : "#EF4444"));
 
@@ -644,12 +671,54 @@ public class MainActivity extends Activity {
                 card.addView(colText);
                 card.addView(tvVal);
 
+                card.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Hapus Transaksi?")
+                            .setMessage("Apakah kamu yakin ingin menghapus transaksi ini? Saldo akan disesuaikan secara otomatis.")
+                            .setPositiveButton("Hapus", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    try {
+                                        String parts[] = item.split("—");
+                                        long val = Long.parseLong(parts[0].replaceAll("\\[\\+\\]|\\[\\-\\]", "").trim());
+                                        String fullText = parts[1];
+                                        
+                                        String tKey = "out";
+                                        if (fullText.contains("[in]")) tKey = "in";
+                                        else if (fullText.contains("[tabungan]")) tKey = "tabungan";
+                                        else if (fullText.contains("[darurat]")) tKey = "darurat";
+                                        else if (fullText.contains("[+]")) tKey = "in";
+
+                                        long cur = pref.getLong(tKey, 0);
+                                        long updated = cur - val;
+                                        if (updated < 0) updated = 0;
+                                        pref.edit().putLong(tKey, updated).apply();
+
+                                        String currentLogs = pref.getString("logs", "");
+                                        currentLogs = currentLogs.replace(item + "\n", "").replace(item, "");
+                                        pref.edit().putString("logs", currentLogs).apply();
+
+                                        Toast.makeText(MainActivity.this, "Transaksi Berhasil Dihapus", Toast.LENGTH_SHORT).show();
+                                        renderTransaksiList();
+                                    } catch(Exception e) {
+                                        Toast.makeText(MainActivity.this, "Gagal menghapus transaksi", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Batal", null)
+                            .show();
+                    }
+                });
+
                 listLayout.addView(card);
             }
         }
         containerContent.addView(listLayout);
     }
 
+    // --- TAB 4: REKAP (Angka Rinci) ---
     private void renderRekap() {
         TextView tvSub = new TextView(this);
         tvSub.setText("ANALISIS KEUANGAN");
@@ -665,7 +734,7 @@ public class MainActivity extends Activity {
         tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(12));
 
         TextView tvDesc = new TextView(this);
-        tvDesc.setText("Pantau arus uang dengan ringkas dan jelas.");
+        tvDesc.setText("Pantau arus uang dengan rinci dan akurat.");
         tvDesc.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvDesc.setTextColor(Color.parseColor("#64748B"));
         tvDesc.setPadding(0, 0, 0, dpToPx(16));
@@ -704,7 +773,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     periodFilter = p;
-                    renderTab(2);
+                    renderTab(3);
                 }
             });
             periodRow.addView(btnP);
@@ -733,7 +802,7 @@ public class MainActivity extends Activity {
 
         TextView tvBigVal = new TextView(this);
         tvBigVal.setText(formatRupiah(saldo));
-        tvBigVal.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+        tvBigVal.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         tvBigVal.setTypeface(Typeface.DEFAULT_BOLD);
         tvBigVal.setTextColor(Color.WHITE);
         tvBigVal.setPadding(0, dpToPx(6), 0, 0);
@@ -748,14 +817,14 @@ public class MainActivity extends Activity {
 
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createSimpleGridCard("Pendapatan", formatShort(in), "#10B981"));
-        row1.addView(createSimpleGridCard("Pengeluaran", formatShort(out), "#F59E0B"));
+        row1.addView(createSimpleGridCard("Pendapatan", formatRupiah(in), "#10B981"));
+        row1.addView(createSimpleGridCard("Pengeluaran", formatRupiah(out), "#F59E0B"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createSimpleGridCard("Tabungan", formatShort(tab), "#3B82F6"));
-        row2.addView(createSimpleGridCard("Dana darurat", formatShort(emg), "#F59E0B"));
+        row2.addView(createSimpleGridCard("Tabungan", formatRupiah(tab), "#3B82F6"));
+        row2.addView(createSimpleGridCard("Dana darurat", formatRupiah(emg), "#F59E0B"));
         containerContent.addView(row2);
 
         TextView tvArus = new TextView(this);
@@ -800,12 +869,12 @@ public class MainActivity extends Activity {
 
         TextView tvL = new TextView(this);
         tvL.setText(label);
-        tvL.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvL.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         tvL.setTextColor(Color.parseColor("#94A3B8"));
 
         TextView tvV = new TextView(this);
         tvV.setText(val);
-        tvV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        tvV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         tvV.setTypeface(Typeface.DEFAULT_BOLD);
         tvV.setTextColor(Color.parseColor(colorHex));
         tvV.setPadding(0, dpToPx(4), 0, 0);
@@ -823,9 +892,9 @@ public class MainActivity extends Activity {
 
         TextView tvL = new TextView(this);
         tvL.setText(label);
-        tvL.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvL.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         tvL.setTextColor(Color.parseColor("#94A3B8"));
-        tvL.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(95), ViewGroup.LayoutParams.WRAP_CONTENT));
+        tvL.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(80), ViewGroup.LayoutParams.WRAP_CONTENT));
 
         ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         pb.setMax((int) max);
@@ -833,12 +902,12 @@ public class MainActivity extends Activity {
         pb.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
 
         TextView tvV = new TextView(this);
-        tvV.setText(formatShort(val));
-        tvV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvV.setText(formatRupiah(val));
+        tvV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         tvV.setTypeface(Typeface.DEFAULT_BOLD);
         tvV.setTextColor(Color.WHITE);
         tvV.setGravity(Gravity.END);
-        tvV.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(75), ViewGroup.LayoutParams.WRAP_CONTENT));
+        tvV.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(95), ViewGroup.LayoutParams.WRAP_CONTENT));
 
         row.addView(tvL);
         row.addView(pb);
@@ -846,6 +915,7 @@ public class MainActivity extends Activity {
         return row;
     }
 
+    // --- TAB 5: PENGATURAN ---
     private void renderPengaturan() {
         TextView tvSub = new TextView(this);
         tvSub.setText("PREFERENSI LOKAL");
@@ -890,7 +960,7 @@ public class MainActivity extends Activity {
                 if (!newName.isEmpty()) {
                     pref.edit().putString("owner_name", newName).apply();
                     Toast.makeText(MainActivity.this, "Nama Profil Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
-                    renderTab(3);
+                    renderTab(4);
                 }
             }
         });
@@ -906,132 +976,6 @@ public class MainActivity extends Activity {
         cardName.addView(btnSaveName);
         containerContent.addView(cardName);
 
-        TextView tvSec1 = new TextView(this);
-        tvSec1.setText("🚩 Target Keuangan");
-        tvSec1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        tvSec1.setTypeface(Typeface.DEFAULT_BOLD);
-        tvSec1.setTextColor(Color.WHITE);
-        tvSec1.setPadding(0, dpToPx(16), 0, dpToPx(8));
-        containerContent.addView(tvSec1);
-
-        final EditText etTargetTab = createInputNumber("Target Tabungan", String.valueOf(pref.getLong("target_tabungan", 10000000)));
-        final EditText etTargetEmg = createInputNumber("Target Dana Darurat", String.valueOf(pref.getLong("target_darurat", 15000000)));
-        containerContent.addView(etTargetTab);
-        containerContent.addView(etTargetEmg);
-
-        TextView tvSec2 = new TextView(this);
-        tvSec2.setText("🔔 Pengingat Penyisihan");
-        tvSec2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        tvSec2.setTypeface(Typeface.DEFAULT_BOLD);
-        tvSec2.setTextColor(Color.WHITE);
-        tvSec2.setPadding(0, dpToPx(16), 0, dpToPx(8));
-        containerContent.addView(tvSec2);
-
-        LinearLayout cardRemind = new LinearLayout(this);
-        cardRemind.setOrientation(LinearLayout.HORIZONTAL);
-        cardRemind.setGravity(Gravity.CENTER_VERTICAL);
-        cardRemind.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
-
-        GradientDrawable gdRem = new GradientDrawable();
-        gdRem.setColor(Color.parseColor("#121721"));
-        gdRem.setCornerRadius(dpToPx(16));
-        cardRemind.setBackground(gdRem);
-
-        LinearLayout colRem = new LinearLayout(this);
-        colRem.setOrientation(LinearLayout.VERTICAL);
-        colRem.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-
-        TextView tvRemTitle = new TextView(this);
-        tvRemTitle.setText("Pengingat Harian (Pencatatan Keuangan)");
-        tvRemTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvRemTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tvRemTitle.setTextColor(Color.WHITE);
-
-        TextView tvRemSub = new TextView(this);
-        tvRemSub.setText("Setiap hari pukul 20:00");
-        tvRemSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        tvRemSub.setTextColor(Color.parseColor("#64748B"));
-
-        colRem.addView(tvRemTitle);
-        colRem.addView(tvRemSub);
-
-        Switch sw = new Switch(this);
-        sw.setChecked(pref.getBoolean("reminder_active", false));
-        sw.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
-                pref.edit().putBoolean("reminder_active", isChecked).apply();
-            }
-        });
-
-        cardRemind.addView(colRem);
-        cardRemind.addView(sw);
-        containerContent.addView(cardRemind);
-
-        TextView tvSec3 = new TextView(this);
-        tvSec3.setText("≡ Daftar Custom Sumber");
-        tvSec3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        tvSec3.setTypeface(Typeface.DEFAULT_BOLD);
-        tvSec3.setTextColor(Color.WHITE);
-        tvSec3.setPadding(0, dpToPx(16), 0, dpToPx(8));
-        containerContent.addView(tvSec3);
-
-        containerContent.addView(createCustomBox("Sumber Pendapatan / Tabungan / Darurat", "Gaji · Grab · Gojek · ShopeeFood"));
-        containerContent.addView(createCustomBox("Kategori Pengeluaran", "Ketik nama pengeluaran sendiri"));
-
-        TextView tvSec4 = new TextView(this);
-        tvSec4.setText("🔒 Keamanan Aplikasi");
-        tvSec4.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        tvSec4.setTypeface(Typeface.DEFAULT_BOLD);
-        tvSec4.setTextColor(Color.WHITE);
-        tvSec4.setPadding(0, dpToPx(16), 0, dpToPx(8));
-        containerContent.addView(tvSec4);
-
-        LinearLayout cardPin = new LinearLayout(this);
-        cardPin.setOrientation(LinearLayout.VERTICAL);
-        cardPin.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
-
-        GradientDrawable gdPin = new GradientDrawable();
-        gdPin.setColor(Color.parseColor("#121721"));
-        gdPin.setCornerRadius(dpToPx(16));
-        cardPin.setBackground(gdPin);
-
-        TextView tvPinTitle = new TextView(this);
-        tvPinTitle.setText("Aktifkan PIN");
-        tvPinTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvPinTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tvPinTitle.setTextColor(Color.WHITE);
-
-        final EditText etPin = createInputNumber("Buat PIN (4-6 angka)", pref.getString("app_pin", ""));
-        etPin.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-
-        Button btnPin = new Button(this);
-        btnPin.setText("Simpan PIN");
-        btnPin.setTextColor(Color.parseColor("#0F172A"));
-        btnPin.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        btnPin.setTypeface(Typeface.DEFAULT_BOLD);
-
-        GradientDrawable gdBtnPin = new GradientDrawable();
-        gdBtnPin.setColor(Color.parseColor("#F59E0B"));
-        gdBtn_setCornerRadius(gdBtnPin, dpToPx(12));
-        btnPin.setBackground(gdBtnPin);
-
-        btnPin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String p = etPin.getText().toString();
-                if (!p.isEmpty()) {
-                    pref.edit().putString("app_pin", p).apply();
-                    Toast.makeText(MainActivity.this, "PIN Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        cardPin.addView(tvPinTitle);
-        cardPin.addView(etPin);
-        cardPin.addView(btnPin);
-        containerContent.addView(cardPin);
-
         TextView tvAuthor = new TextView(this);
         tvAuthor.setText("\nINCOMESTRUCT v1.0\nDibuat oleh Helmi Zainul Pahmi");
         tvAuthor.setTextColor(Color.parseColor("#F59E0B"));
@@ -1042,68 +986,11 @@ public class MainActivity extends Activity {
         containerContent.addView(tvAuthor);
     }
 
-    private void gdBtn_setCornerRadius(GradientDrawable gd, int radius) {
-        gd.setCornerRadius(radius);
-    }
-
-    private View createCustomBox(String title, String sub) {
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
-
-        GradientDrawable gd = new GradientDrawable();
-        gd.setColor(Color.parseColor("#121721"));
-        gd.setCornerRadius(dpToPx(16));
-        card.setBackground(gd);
-
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, 0, 0, dpToPx(8));
-        card.setLayoutParams(lp);
-
-        TextView tvTitle = new TextView(this);
-        tvTitle.setText("≡ " + title);
-        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tvTitle.setTextColor(Color.WHITE);
-
-        TextView tvSub = new TextView(this);
-        tvSub.setText(sub);
-        tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        tvSub.setTextColor(Color.parseColor("#64748B"));
-        tvSub.setPadding(0, dpToPx(4), 0, 0);
-
-        card.addView(tvTitle);
-        tvSub.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        card.addView(tvSub);
-        return card;
-    }
-
-    private EditText createInputNumber(String hint, String val) {
-        EditText et = new EditText(this);
-        et.setHint(hint);
-        et.setText(val);
-        et.setHintTextColor(Color.parseColor("#475569"));
-        et.setTextColor(Color.WHITE);
-        et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        et.setInputType(InputType.TYPE_CLASS_NUMBER);
-        et.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
-
-        GradientDrawable gd = new GradientDrawable();
-        gd.setColor(Color.parseColor("#0B0E14"));
-        gd.setCornerRadius(dpToPx(14));
-        et.setBackground(gd);
-
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, dpToPx(6), 0, dpToPx(8));
-        et.setLayoutParams(lp);
-        return et;
-    }
-
     private EditText createInputText(String hint, String val) {
         EditText et = new EditText(this);
         et.setHint(hint);
         et.setText(val);
-        et.setHintTextColor(Color.parseColor("#475569"));
+        et.setHintTextColor(Color.parseColor("#64748B"));
         et.setTextColor(Color.WHITE);
         et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         et.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
@@ -1123,12 +1010,5 @@ public class MainActivity extends Activity {
         Locale localeID = new Locale("in", "ID");
         NumberFormat format = NumberFormat.getCurrencyInstance(localeID);
         return format.format(amount).replace(",00", "");
-    }
-
-    private String formatShort(long amount) {
-        if (amount >= 1000000000) return "Rp" + (amount / 1000000000) + " M";
-        if (amount >= 1000000) return "Rp" + (amount / 1000000) + " jt";
-        if (amount >= 1000) return "Rp" + (amount / 1000) + " rb";
-        return "Rp" + amount;
     }
 }
