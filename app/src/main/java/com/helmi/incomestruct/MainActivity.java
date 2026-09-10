@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -78,8 +77,7 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(12), 0, dpToPx(16));
 
         String[] tabs = {"Beranda", "Transaksi", "Rekap", "Pengaturan"};
-        String[] textIcons = {"⌂", "⇆", "", "⚙"}; 
-        int[] customImageIcons = {0, 0, R.drawable.ic_rekap, 0};
+        String[] textIcons = {"⌂", "⇆", "📊", "⚙"}; 
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -87,24 +85,12 @@ public class MainActivity extends Activity {
             itemLayout.setOrientation(LinearLayout.VERTICAL);
             itemLayout.setGravity(Gravity.CENTER);
 
-            if (i == 2) { 
-                ImageView ivIcon = new ImageView(this);
-                ivIcon.setImageResource(customImageIcons[i]);
-                ivIcon.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(24), dpToPx(24)));
-                if (currentTab == i) {
-                    ivIcon.setColorFilter(Color.parseColor("#F59E0B"));
-                } else {
-                    ivIcon.setColorFilter(Color.parseColor("#64748B"));
-                }
-                itemLayout.addView(ivIcon);
-            } else {
-                TextView tvIcon = new TextView(this);
-                tvIcon.setText(textIcons[i]);
-                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-                tvIcon.setGravity(Gravity.CENTER);
-                tvIcon.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
-                itemLayout.addView(tvIcon);
-            }
+            TextView tvIcon = new TextView(this);
+            tvIcon.setText(textIcons[i]);
+            tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+            tvIcon.setGravity(Gravity.CENTER);
+            tvIcon.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
+            itemLayout.addView(tvIcon);
 
             TextView tvText = new TextView(this);
             tvText.setText(tabs[i]);
@@ -202,14 +188,14 @@ public class MainActivity extends Activity {
 
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatShort(in), "#10B981", R.drawable.ic_pendapatan));
-        row1.addView(createStatCard("Pengeluaran", formatShort(out), "#F59E0B", R.drawable.ic_pengeluaran));
+        row1.addView(createStatCard("Pendapatan", formatShort(in), "#10B981", "📈"));
+        row1.addView(createStatCard("Pengeluaran", formatShort(out), "#F59E0B", "📉"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", R.drawable.ic_tabungan));
-        row2.addView(createStatCard("Dana darurat", formatShort(emg), "#F59E0B", R.drawable.ic_danadarurat));
+        row2.addView(createStatCard("Tabungan", formatShort(tab), "#3B82F6", "💰"));
+        row2.addView(createStatCard("Dana darurat", formatShort(emg), "#F59E0B", "🛡️"));
         containerContent.addView(row2);
 
         TextView tvCatat = new TextView(this);
@@ -231,7 +217,7 @@ public class MainActivity extends Activity {
         renderCatatFormUI();
     }
 
-    private View createStatCard(String title, String val, String colorHex, int imageResId) {
+    private View createStatCard(String title, String val, String colorHex, String emojiIcon) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dpToPx(18), dpToPx(18), dpToPx(18), dpToPx(18));
@@ -245,12 +231,10 @@ public class MainActivity extends Activity {
         params.setMargins(dpToPx(6), 0, dpToPx(6), dpToPx(12));
         card.setLayoutParams(params);
 
-        ImageView ivIcon = new ImageView(this);
-        ivIcon.setImageResource(imageResId);
-        
-        LinearLayout.LayoutParams pIcon = new LinearLayout.LayoutParams(dpToPx(28), dpToPx(28));
-        pIcon.setMargins(0, 0, 0, dpToPx(8));
-        ivIcon.setLayoutParams(pIcon);
+        TextView tvEmoji = new TextView(this);
+        tvEmoji.setText(emojiIcon);
+        tvEmoji.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        tvEmoji.setPadding(0, 0, 0, dpToPx(6));
 
         TextView label = new TextView(this);
         label.setText(title);
@@ -262,9 +246,9 @@ public class MainActivity extends Activity {
         valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         valueTv.setTypeface(Typeface.DEFAULT_BOLD);
         valueTv.setTextColor(Color.parseColor(colorHex));
-        valueTv.setPadding(0, dpToPx(6), 0, 0);
+        valueTv.setPadding(0, dpToPx(4), 0, 0);
 
-        card.addView(ivIcon);
+        card.addView(tvEmoji);
         card.addView(label);
         card.addView(valueTv);
         return card;
@@ -624,12 +608,13 @@ public class MainActivity extends Activity {
                 pCard.setMargins(0, 0, 0, dpToPx(10));
                 card.setLayoutParams(pCard);
 
-                ImageView ivIcon = new ImageView(this);
-                ivIcon.setImageResource(item.contains("[+]") ? R.drawable.ic_pendapatan : R.drawable.ic_pengeluaran);
+                TextView tvIcon = new TextView(this);
+                tvIcon.setText(item.contains("[+]") ? "📈" : "📉");
+                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 
-                LinearLayout.LayoutParams pIcon = new LinearLayout.LayoutParams(dpToPx(24), dpToPx(24));
+                LinearLayout.LayoutParams pIcon = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 pIcon.setMargins(0, 0, dpToPx(14), 0);
-                ivIcon.setLayoutParams(pIcon);
+                tvIcon.setLayoutParams(pIcon);
 
                 LinearLayout colText = new LinearLayout(this);
                 colText.setOrientation(LinearLayout.VERTICAL);
@@ -655,7 +640,7 @@ public class MainActivity extends Activity {
                 tvVal.setTypeface(Typeface.DEFAULT_BOLD);
                 tvVal.setTextColor(Color.parseColor(item.contains("[+]") ? "#10B981" : "#EF4444"));
 
-                card.addView(ivIcon);
+                card.addView(tvIcon);
                 card.addView(colText);
                 card.addView(tvVal);
 
@@ -1028,7 +1013,7 @@ public class MainActivity extends Activity {
 
         GradientDrawable gdBtnPin = new GradientDrawable();
         gdBtnPin.setColor(Color.parseColor("#F59E0B"));
-        gdBtnPin.setCornerRadius(dpToPx(12));
+        gdBtn_setCornerRadius(gdBtnPin, dpToPx(12));
         btnPin.setBackground(gdBtnPin);
 
         btnPin.setOnClickListener(new View.OnClickListener() {
@@ -1057,6 +1042,10 @@ public class MainActivity extends Activity {
         containerContent.addView(tvAuthor);
     }
 
+    private void gdBtn_setCornerRadius(GradientDrawable gd, int radius) {
+        gd.setCornerRadius(radius);
+    }
+
     private View createCustomBox(String title, String sub) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
@@ -1072,7 +1061,7 @@ public class MainActivity extends Activity {
         card.setLayoutParams(lp);
 
         TextView tvTitle = new TextView(this);
-        tvTitle.setText(title);
+        tvTitle.setText("≡ " + title);
         tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
@@ -1084,6 +1073,7 @@ public class MainActivity extends Activity {
         tvSub.setPadding(0, dpToPx(4), 0, 0);
 
         card.addView(tvTitle);
+        tvSub.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         card.addView(tvSub);
         return card;
     }
@@ -1092,7 +1082,7 @@ public class MainActivity extends Activity {
         EditText et = new EditText(this);
         et.setHint(hint);
         et.setText(val);
-        et.setHintTextColor(Color.parseColor("#64748B"));
+        et.setHintTextColor(Color.parseColor("#475569"));
         et.setTextColor(Color.WHITE);
         et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -1113,7 +1103,7 @@ public class MainActivity extends Activity {
         EditText et = new EditText(this);
         et.setHint(hint);
         et.setText(val);
-        et.setHintTextColor(Color.parseColor("#64748B"));
+        et.setHintTextColor(Color.parseColor("#475569"));
         et.setTextColor(Color.WHITE);
         et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         et.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
@@ -1124,7 +1114,7 @@ public class MainActivity extends Activity {
         et.setBackground(gd);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, dpToPx(6), dpToPx(8), dpToPx(8));
+        lp.setMargins(0, dpToPx(6), 0, dpToPx(8));
         et.setLayoutParams(lp);
         return et;
     }
