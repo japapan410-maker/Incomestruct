@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
         LinearLayout nav = new LinearLayout(this);
         nav.setOrientation(LinearLayout.HORIZONTAL);
         nav.setBackgroundColor(Color.parseColor("#0B0E14"));
-        nav.setPadding(0, dpToPx(10), 0, dpToPx(14));
+        nav.setPadding(0, dpToPx(14), 0, dpToPx(18));
 
         String[] tabs = {"Beranda", "Saldo", "Transaksi", "Rekap", "Pengaturan"};
         String[] textIcons = {"⌂", "$", "⇆", "≡", "⚙"}; 
@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
 
             TextView tvIcon = new TextView(this);
             tvIcon.setText(textIcons[i]);
-            tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
             tvIcon.setGravity(Gravity.CENTER);
             tvIcon.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
             itemLayout.addView(tvIcon);
@@ -100,6 +100,7 @@ public class MainActivity extends Activity {
             tvText.setGravity(Gravity.CENTER);
             tvText.setTypeface(Typeface.DEFAULT_BOLD);
             tvText.setTextColor(i == currentTab ? Color.parseColor("#F59E0B") : Color.parseColor("#64748B"));
+            tvText.setPadding(0, dpToPx(2), 0, 0);
 
             itemLayout.addView(tvText);
 
@@ -158,7 +159,7 @@ public class MainActivity extends Activity {
         cardSaldo.setBackground(gdSaldo);
 
         TextView labelSaldo = new TextView(this);
-        labelSaldo.setText("SALDO BERSIH (SIAP PAKAI)");
+        labelSaldo.setText("CASHFLOW HARIANMU");
         labelSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         labelSaldo.setTypeface(Typeface.DEFAULT_BOLD);
         labelSaldo.setTextColor(Color.parseColor("#78350F"));
@@ -190,7 +191,6 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
-        // Ukuran ikon diperbesar (22sp) agar lebih tegas dan proporsional
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
         row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "📥")); 
@@ -298,7 +298,7 @@ public class MainActivity extends Activity {
     private View createStatCard(String title, String val, String colorHex, String symbolText) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dpToPx(18), dpToPx(18), dpToPx(18), dpToPx(18)); // Padding disesuaikan agar lebih proporsional
+        card.setPadding(dpToPx(18), dpToPx(18), dpToPx(18), dpToPx(18));
 
         GradientDrawable gd = new GradientDrawable();
         gd.setColor(Color.parseColor("#121721"));
@@ -311,7 +311,7 @@ public class MainActivity extends Activity {
 
         TextView tvSymbol = new TextView(this);
         tvSymbol.setText(symbolText);
-        tvSymbol.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22); // Ukuran ikon diperbesar menjadi 22sp (tidak kekecilan lagi)
+        tvSymbol.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         tvSymbol.setTypeface(Typeface.DEFAULT_BOLD);
         tvSymbol.setTextColor(Color.parseColor("#64748B")); 
         tvSymbol.setPadding(0, 0, 0, dpToPx(6));
@@ -580,13 +580,10 @@ public class MainActivity extends Activity {
     }
 
     private void updateSpinnerOptions(Spinner spinner, String type) {
-        String[] options = new String[]{
-            "Gaji", 
-            "Pendapatan Grab", 
-            "Pendapatan Gojek", 
-            "ShopeeFood", 
-            "Pemasukan Lainnya"
-        };
+        // Ambil daftar kustom dari SharedPreferences, gunakan default jika belum ada
+        String defaultSources = "Gaji, Pendapatan Grab, Pendapatan Gojek, ShopeeFood, Pemasukan Lainnya";
+        String customSources = pref.getString("custom_sources", defaultSources);
+        final String[] options = customSources.split("\\s*,\\s*");
         
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, options) {
             @Override
@@ -701,7 +698,7 @@ public class MainActivity extends Activity {
 
                 TextView tvIcon = new TextView(this);
                 tvIcon.setText(item.contains("[+]") ? "📥" : "📤");
-                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20); // Ukuran ikon riwayat transaksi juga diperbesar
+                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 tvIcon.setTypeface(Typeface.DEFAULT_BOLD);
                 tvIcon.setTextColor(Color.parseColor("#64748B")); 
                 
@@ -1141,7 +1138,43 @@ public class MainActivity extends Activity {
         tvSec3.setPadding(0, 0, 0, dpToPx(6));
         containerContent.addView(tvSec3);
 
-        containerContent.addView(createCustomBox("Sumber Pendapatan / Tabungan", "Gaji · Grab · Gojek · ShopeeFood"));
+        // Kustomisasi Sumber Pendapatan/Tabungan agar bisa diedit sendiri oleh rekan Anda
+        String defaultSources = "Gaji, Pendapatan Grab, Pendapatan Gojek, ShopeeFood, Pemasukan Lainnya";
+        final EditText etCustomSources = createInputText("Pisahkan dengan koma (,)", pref.getString("custom_sources", defaultSources));
+        Button btnSaveSources = new Button(this);
+        btnSaveSources.setText("Simpan Sumber Pendapatan");
+        btnPlanStyle(btnSaveSources);
+
+        btnSaveSources.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newSources = etCustomSources.getText().toString().trim();
+                if (!newSources.isEmpty()) {
+                    pref.edit().putString("custom_sources", newSources).apply();
+                    Toast.makeText(MainActivity.this, "Daftar Sumber Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Sumber tidak boleh kosong", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        LinearLayout cardCustomSrc = new LinearLayout(this);
+        cardCustomSrc.setOrientation(LinearLayout.VERTICAL);
+        cardCustomSrc.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+        cardCustomSrc.setBackground(gdCardName);
+        cardCustomSrc.setLayoutParams(pCardMargin);
+        
+        TextView lblSrcTitle = new TextView(this);
+        lblSrcTitle.setText("≡ Sumber Pendapatan / Tabungan");
+        lblSrcTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        lblSrcTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        lblSrcTitle.setTextColor(Color.WHITE);
+        
+        cardCustomSrc.addView(lblSrcTitle);
+        cardCustomSrc.addView(etCustomSources);
+        cardCustomSrc.addView(btnSaveSources);
+        containerContent.addView(cardCustomSrc);
+
         containerContent.addView(createCustomBox("Kategori Pengeluaran", "Ketik nama pengeluaran sendiri secara bebas"));
 
         TextView tvSec4 = new TextView(this);
