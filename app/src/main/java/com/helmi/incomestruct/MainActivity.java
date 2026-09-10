@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
 
     private int dpToPx(int dp) {
         return (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+                TypedValue.COMPLEX_UNIT_SP, dp, getResources().getDisplayMetrics());
     }
 
     private LinearLayout createBottomNav() {
@@ -79,7 +79,6 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(10), 0, dpToPx(14));
 
         String[] tabs = {"Beranda", "Saldo", "Transaksi", "Rekap", "Pengaturan"};
-        // Tab 4 (Rekap) diganti garis monokrom bersih "≡" agar selaras dengan tab lain
         String[] textIcons = {"⌂", "$", "⇆", "≡", "⚙"}; 
 
         for (int i = 0; i < tabs.length; i++) {
@@ -191,17 +190,17 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
-        // 4 Kartu Statistik dengan warna ikon & teks nominal sesuai permintaan khusus:
+        // Ukuran ikon diperbesar (22sp) agar lebih tegas dan proporsional
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "↓")); // Panah ke bawah hijau
-        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#EF4444", "↑")); // Panah ke atas merah
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "📥")); 
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#EF4444", "📤")); 
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "👛")); // Dompet biru
-        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡")); // Perisai gold
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "💰")); 
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡")); 
         containerContent.addView(row2);
 
         TextView tvCatat = new TextView(this);
@@ -285,13 +284,13 @@ public class MainActivity extends Activity {
 
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "↓"));
-        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#EF4444", "↑"));
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "📥"));
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#EF4444", "📤"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "👛"));
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "💰"));
         row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡"));
         containerContent.addView(row2);
     }
@@ -299,7 +298,7 @@ public class MainActivity extends Activity {
     private View createStatCard(String title, String val, String colorHex, String symbolText) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+        card.setPadding(dpToPx(18), dpToPx(18), dpToPx(18), dpToPx(18)); // Padding disesuaikan agar lebih proporsional
 
         GradientDrawable gd = new GradientDrawable();
         gd.setColor(Color.parseColor("#121721"));
@@ -312,10 +311,10 @@ public class MainActivity extends Activity {
 
         TextView tvSymbol = new TextView(this);
         tvSymbol.setText(symbolText);
-        tvSymbol.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        tvSymbol.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22); // Ukuran ikon diperbesar menjadi 22sp (tidak kekecilan lagi)
         tvSymbol.setTypeface(Typeface.DEFAULT_BOLD);
-        tvSymbol.setTextColor(Color.parseColor(colorHex)); // Simbol dicetak tebal berwarna sesuai jenisnya
-        tvSymbol.setPadding(0, 0, 0, dpToPx(4));
+        tvSymbol.setTextColor(Color.parseColor("#64748B")); 
+        tvSymbol.setPadding(0, 0, 0, dpToPx(6));
 
         TextView label = new TextView(this);
         label.setText(title);
@@ -324,10 +323,10 @@ public class MainActivity extends Activity {
 
         TextView valueTv = new TextView(this);
         valueTv.setText(val);
-        valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         valueTv.setTypeface(Typeface.DEFAULT_BOLD);
-        valueTv.setTextColor(Color.parseColor(colorHex)); // Nilai nominal / Rp dicetak tebal dengan warna khusus
-        valueTv.setPadding(0, dpToPx(4), 0, 0);
+        valueTv.setTextColor(Color.parseColor(colorHex));
+        valueTv.setPadding(0, dpToPx(6), 0, 0);
 
         card.addView(tvSymbol);
         card.addView(label);
@@ -436,7 +435,7 @@ public class MainActivity extends Activity {
         etWaktu.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
         etWaktu.setBackground(gdInput);
         LinearLayout.LayoutParams pSub2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        pSub2.setMargins(0, dpToPx(6), 0, dpToPx(16));
+        pSub2.setMargins(0, dpToPx(6), dpToPx(6), dpToPx(16));
         etWaktu.setLayoutParams(pSub2);
         colWaktu.addView(etWaktu);
         dateRow.addView(colWaktu);
@@ -701,10 +700,10 @@ public class MainActivity extends Activity {
                 card.setLayoutParams(pCard);
 
                 TextView tvIcon = new TextView(this);
-                tvIcon.setText(item.contains("[+]") ? "↓" : "↑");
-                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                tvIcon.setText(item.contains("[+]") ? "📥" : "📤");
+                tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20); // Ukuran ikon riwayat transaksi juga diperbesar
                 tvIcon.setTypeface(Typeface.DEFAULT_BOLD);
-                tvIcon.setTextColor(Color.parseColor(item.contains("[+]") ? "#10B981" : "#EF4444"));
+                tvIcon.setTextColor(Color.parseColor("#64748B")); 
                 
                 LinearLayout.LayoutParams pIcon = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 pIcon.setMargins(0, 0, dpToPx(14), 0);
@@ -1020,14 +1019,7 @@ public class MainActivity extends Activity {
         final EditText etOwnerName = createInputText("Nama Pemilik", pref.getString("owner_name", "Helmi Zainul"));
         Button btnSaveName = new Button(this);
         btnSaveName.setText("Simpan Nama Profil");
-        btnSaveName.setTextColor(Color.parseColor("#0F172A"));
-        btnSaveName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        btnSaveName.setTypeface(Typeface.DEFAULT_BOLD);
-
-        GradientDrawable gdBtnName = new GradientDrawable();
-        gdBtnName.setColor(Color.parseColor("#F59E0B"));
-        gdBtnName.setCornerRadius(dpToPx(12));
-        btnSaveName.setBackground(gdBtnName);
+        btnPlanStyle(btnSaveName);
 
         btnSaveName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1075,10 +1067,7 @@ public class MainActivity extends Activity {
         
         Button btnSaveTarget = new Button(this);
         btnSaveTarget.setText("Simpan Target");
-        btnSaveTarget.setTextColor(Color.parseColor("#0F172A"));
-        btnSaveTarget.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        btnSaveTarget.setTypeface(Typeface.DEFAULT_BOLD);
-        btnSaveTarget.setBackground(gdBtnName);
+        btnPlanStyle(btnSaveTarget);
         btnSaveTarget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1180,11 +1169,7 @@ public class MainActivity extends Activity {
 
         Button btnPin = new Button(this);
         btnPin.setText("Simpan PIN");
-        btnPin.setTextColor(Color.parseColor("#0F172A"));
-        btnPin.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        btnPin.setTypeface(Typeface.DEFAULT_BOLD);
-        btnPin.setBackground(gdBtnName);
-
+        btnPlanStyle(btnPin);
         btnPin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1209,6 +1194,16 @@ public class MainActivity extends Activity {
         tvAuthor.setGravity(Gravity.CENTER_HORIZONTAL);
         tvAuthor.setPadding(0, dpToPx(20), 0, dpToPx(10));
         containerContent.addView(tvAuthor);
+    }
+
+    private void btnPlanStyle(Button btn) {
+        btn.setTextColor(Color.parseColor("#0F172A"));
+        btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        btn.setTypeface(Typeface.DEFAULT_BOLD);
+        GradientDrawable gdBtnName = new GradientDrawable();
+        gdBtnName.setColor(Color.parseColor("#F59E0B"));
+        gdBtnName.setCornerRadius(dpToPx(12));
+        btn.setBackground(gdBtnName);
     }
 
     private View createCustomBox(String title, String sub) {
@@ -1246,7 +1241,7 @@ public class MainActivity extends Activity {
         EditText et = new EditText(this);
         et.setHint(hint);
         et.setText(val);
-        et.setHintTextColor(Color.parseColor("#64748B"));
+        et.setHintTextColor(Color.parseColor("#475569"));
         et.setTextColor(Color.WHITE);
         et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -1267,7 +1262,7 @@ public class MainActivity extends Activity {
         EditText et = new EditText(this);
         et.setHint(hint);
         et.setText(val);
-        et.setHintTextColor(Color.parseColor("#64748B"));
+        et.setHintTextColor(Color.parseColor("#475569"));
         et.setTextColor(Color.WHITE);
         et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         et.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
