@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(10), 0, dpToPx(14));
 
         String[] tabs = {"Beranda", "Saldo", "Transaksi", "Rekap", "Pengaturan"};
-        String[] textIcons = {"📅", "💰", "⇆", "📊", "⚙"}; 
+        String[] textIcons = {"⌂", "💰", "⇆", "📊", "⚙"}; 
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -121,17 +121,17 @@ public class MainActivity extends Activity {
         containerContent.removeAllViews();
         containerContent.setPadding(dpToPx(20), dpToPx(28), dpToPx(20), dpToPx(28));
 
-        if (tabIndex == 0) renderBeranda();      // Tab 1: Beranda (Arus Keuangan Harian)
+        if (tabIndex == 0) renderBeranda();      // Tab 1: Beranda (Arus Harian + Form Catat)
         else if (tabIndex == 1) renderSaldo();     // Tab 2: Saldo (Ringkasan Keuangan)
         else if (tabIndex == 2) renderTransaksi(); // Tab 3: Transaksi
         else if (tabIndex == 3) renderRekap();     // Tab 4: Rekap
-        else renderPengaturan();                   // Tab 5: Pengaturan
+        else renderPengaturan();                   // Tab 5: Pengaturan Lengkap
     }
 
-    // --- TAB 1: BERANDA (ARUS KEUANGAN HARIAN) ---
+    // --- TAB 1: BERANDA (ARUS HARIAN + FORM CATAT) ---
     private void renderBeranda() {
         TextView tvSub = new TextView(this);
-        tvSub.setText("PENCATATAN HARIAN");
+        tvSub.setText("ARUS KEUANGAN HARIAN");
         tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSub.setTypeface(Typeface.DEFAULT_BOLD);
         tvSub.setTextColor(Color.parseColor("#F59E0B"));
@@ -139,8 +139,8 @@ public class MainActivity extends Activity {
         String ownerName = pref.getString("owner_name", "Helmi Zainul");
 
         TextView tvTitle = new TextView(this);
-        tvTitle.setText("Arus Harian, " + ownerName);
-        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+        tvTitle.setText("Halo, " + ownerName);
+        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
         tvTitle.setTextColor(Color.WHITE);
         tvTitle.setPadding(0, dpToPx(4), 0, dpToPx(18));
@@ -148,13 +148,83 @@ public class MainActivity extends Activity {
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
+        LinearLayout cardSaldo = new LinearLayout(this);
+        cardSaldo.setOrientation(LinearLayout.VERTICAL);
+        cardSaldo.setPadding(dpToPx(24), dpToPx(22), dpToPx(24), dpToPx(22));
+        
+        GradientDrawable gdSaldo = new GradientDrawable();
+        gdSaldo.setColor(Color.parseColor("#F59E0B"));
+        gdSaldo.setCornerRadius(dpToPx(24));
+        cardSaldo.setBackground(gdSaldo);
+
+        TextView labelSaldo = new TextView(this);
+        labelSaldo.setText("SALDO BERSIH (SIAP PAKAI)");
+        labelSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        labelSaldo.setTypeface(Typeface.DEFAULT_BOLD);
+        labelSaldo.setTextColor(Color.parseColor("#78350F"));
+
+        long in = pref.getLong("in", 0);
+        long out = pref.getLong("out", 0);
+        long tab = pref.getLong("tabungan", 0);
+        long emg = pref.getLong("darurat", 0);
+        long saldo = in - out - tab - emg;
+
+        TextView tvSaldo = new TextView(this);
+        tvSaldo.setText(formatRupiah(saldo));
+        tvSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+        tvSaldo.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSaldo.setTextColor(Color.parseColor("#0F172A"));
+        tvSaldo.setPadding(0, dpToPx(6), 0, dpToPx(6));
+
+        TextView tvSubSaldo = new TextView(this);
+        tvSubSaldo.setText("Manajemen keuangan fleksibel & aman");
+        tvSubSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvSubSaldo.setTextColor(Color.parseColor("#78350F"));
+
+        cardSaldo.addView(labelSaldo);
+        cardSaldo.addView(tvSaldo);
+        cardSaldo.addView(tvSubSaldo);
+        
+        LinearLayout.LayoutParams pSaldo = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        pSaldo.setMargins(0, 0, 0, dpToPx(16));
+        cardSaldo.setLayoutParams(pSaldo);
+        containerContent.addView(cardSaldo);
+
+        LinearLayout row1 = new LinearLayout(this);
+        row1.setOrientation(LinearLayout.HORIZONTAL);
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "📈"));
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "📉"));
+        containerContent.addView(row1);
+
+        LinearLayout row2 = new LinearLayout(this);
+        row2.setOrientation(LinearLayout.HORIZONTAL);
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "💰"));
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡️"));
+        containerContent.addView(row2);
+
+        TextView tvCatat = new TextView(this);
+        tvCatat.setText("Catat Transaksi Harian");
+        tvCatat.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        tvCatat.setTypeface(Typeface.DEFAULT_BOLD);
+        tvCatat.setTextColor(Color.WHITE);
+        tvCatat.setPadding(0, dpToPx(22), 0, dpToPx(4));
+
+        TextView tvCatatSub = new TextView(this);
+        tvCatatSub.setText("Catat pemasukan dan pengeluaran secara rinci");
+        tvCatatSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        tvCatatSub.setTextColor(Color.parseColor("#64748B"));
+        tvCatatSub.setPadding(0, 0, 0, dpToPx(12));
+
+        containerContent.addView(tvCatat);
+        containerContent.addView(tvCatatSub);
+
         renderCatatFormUI();
     }
 
-    // --- TAB 2: SALDO (RINGKASAN UTAMA) ---
+    // --- TAB 2: SALDO (RINGKASAN UTAMA KESELURUHAN) ---
     private void renderSaldo() {
         TextView tvSub = new TextView(this);
-        tvSub.setText("RINGKASAN UTAMA");
+        tvSub.setText("RINGKASAN KESELURUHAN");
         tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSub.setTypeface(Typeface.DEFAULT_BOLD);
         tvSub.setTextColor(Color.parseColor("#F59E0B"));
@@ -192,13 +262,13 @@ public class MainActivity extends Activity {
 
         TextView tvSaldo = new TextView(this);
         tvSaldo.setText(formatRupiah(saldo));
-        tvSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+        tvSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
         tvSaldo.setTypeface(Typeface.DEFAULT_BOLD);
         tvSaldo.setTextColor(Color.parseColor("#0F172A"));
         tvSaldo.setPadding(0, dpToPx(6), 0, dpToPx(6));
 
         TextView tvSubSaldo = new TextView(this);
-        tvSubSaldo.setText("Manajemen keuangan fleksibel & aman");
+        tvSubSaldo.setText("Akumulasi total seluruh arus keuangan");
         tvSubSaldo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         tvSubSaldo.setTextColor(Color.parseColor("#78350F"));
 
@@ -537,7 +607,7 @@ public class MainActivity extends Activity {
         spinner.setAdapter(adapter);
     }
 
-    // --- TAB 3: TRANSAKSI (Bisa Hapus & Kurangi Saldo Otomatis) ---
+    // --- TAB 3: TRANSAKSI (Bisa Hapus & Kurangi Saldo) ---
     private void renderTransaksi() {
         TextView tvSub = new TextView(this);
         tvSub.setText("RIWAYAT KEUANGAN");
@@ -718,7 +788,7 @@ public class MainActivity extends Activity {
         containerContent.addView(listLayout);
     }
 
-    // --- TAB 4: REKAP (Angka Rinci) ---
+    // --- TAB 4: REKAP ---
     private void renderRekap() {
         TextView tvSub = new TextView(this);
         tvSub.setText("ANALISIS KEUANGAN");
@@ -915,7 +985,7 @@ public class MainActivity extends Activity {
         return row;
     }
 
-    // --- TAB 5: PENGATURAN ---
+    // --- TAB 5: PENGATURAN (LENGKAP SEMUA FITUR) ---
     private void renderPengaturan() {
         TextView tvSub = new TextView(this);
         tvSub.setText("PREFERENSI LOKAL");
@@ -933,12 +1003,13 @@ public class MainActivity extends Activity {
         containerContent.addView(tvSub);
         containerContent.addView(tvTitle);
 
+        // 1. Nama Profil
         TextView tvSecName = new TextView(this);
         tvSecName.setText("👤 Nama Profil Pengguna");
-        tvSecName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tvSecName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         tvSecName.setTypeface(Typeface.DEFAULT_BOLD);
         tvSecName.setTextColor(Color.WHITE);
-        tvSecName.setPadding(0, 0, 0, dpToPx(8));
+        tvSecName.setPadding(0, 0, 0, dpToPx(6));
         containerContent.addView(tvSecName);
 
         final EditText etOwnerName = createInputText("Nama Pemilik", pref.getString("owner_name", "Helmi Zainul"));
@@ -974,7 +1045,160 @@ public class MainActivity extends Activity {
         cardName.setBackground(gdCardName);
         cardName.addView(etOwnerName);
         cardName.addView(btnSaveName);
+        
+        LinearLayout.LayoutParams pCardMargin = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        pCardMargin.setMargins(0, 0, 0, dpToPx(14));
+        cardName.setLayoutParams(pCardMargin);
         containerContent.addView(cardName);
+
+        // 2. Target Keuangan
+        TextView tvSec1 = new TextView(this);
+        tvSec1.setText("🚩 Target Keuangan");
+        tvSec1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        tvSec1.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec1.setTextColor(Color.WHITE);
+        tvSec1.setPadding(0, 0, 0, dpToPx(6));
+        containerContent.addView(tvSec1);
+
+        LinearLayout cardTarget = new LinearLayout(this);
+        cardTarget.setOrientation(LinearLayout.VERTICAL);
+        cardTarget.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+        cardTarget.setBackground(gdCardName);
+        cardTarget.setLayoutParams(pCardMargin);
+
+        final EditText etTargetTab = createInputNumber("Target Tabungan", String.valueOf(pref.getLong("target_tabungan", 10000000)));
+        final EditText etTargetEmg = createInputNumber("Target Dana Darurat", String.valueOf(pref.getLong("target_darurat", 15000000)));
+        
+        Button btnSaveTarget = new Button(this);
+        btnSaveTarget.setText("Simpan Target");
+        btnSaveTarget.setTextColor(Color.parseColor("#0F172A"));
+        btnSaveTarget.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        btnSaveTarget.setTypeface(Typeface.DEFAULT_BOLD);
+        btnSaveTarget.setBackground(gdBtnName);
+        btnSaveTarget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    long tTab = Long.parseLong(etTargetTab.getText().toString());
+                    long tEmg = Long.parseLong(etTargetEmg.getText().toString());
+                    pref.edit().putLong("target_tabungan", tTab).putLong("target_darurat", tEmg).apply();
+                    Toast.makeText(MainActivity.this, "Target Keuangan Disimpan!", Toast.LENGTH_SHORT).show();
+                } catch(Exception e) {
+                    Toast.makeText(MainActivity.this, "Masukkan angka yang valid", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        cardTarget.addView(etTargetTab);
+        cardTarget.addView(etTargetEmg);
+        cardTarget.addView(btnSaveTarget);
+        containerContent.addView(cardTarget);
+
+        // 3. Pengingat Harian
+        TextView tvSec2 = new TextView(this);
+        tvSec2.setText("🔔 Pengingat Penyisihan");
+        tvSec2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        tvSec2.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec2.setTextColor(Color.WHITE);
+        tvSec2.setPadding(0, 0, 0, dpToPx(6));
+        containerContent.addView(tvSec2);
+
+        LinearLayout cardRemind = new LinearLayout(this);
+        cardRemind.setOrientation(LinearLayout.HORIZONTAL);
+        cardRemind.setGravity(Gravity.CENTER_VERTICAL);
+        cardRemind.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+        cardRemind.setBackground(gdCardName);
+        cardRemind.setLayoutParams(pCardMargin);
+
+        LinearLayout colRem = new LinearLayout(this);
+        colRem.setOrientation(LinearLayout.VERTICAL);
+        colRem.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+
+        TextView tvRemTitle = new TextView(this);
+        tvRemTitle.setText("Pengingat Harian");
+        tvRemTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvRemTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvRemTitle.setTextColor(Color.WHITE);
+
+        TextView tvRemSub = new TextView(this);
+        tvRemSub.setText("Setiap hari pukul 20:00");
+        tvRemSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        tvRemSub.setTextColor(Color.parseColor("#64748B"));
+
+        colRem.addView(tvRemTitle);
+        colRem.addView(tvRemSub);
+
+        Switch sw = new Switch(this);
+        sw.setChecked(pref.getBoolean("reminder_active", false));
+        sw.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
+                pref.edit().putBoolean("reminder_active", isChecked).apply();
+            }
+        });
+
+        cardRemind.addView(colRem);
+        cardRemind.addView(sw);
+        containerContent.addView(cardRemind);
+
+        // 4. Daftar Custom Sumber
+        TextView tvSec3 = new TextView(this);
+        tvSec3.setText("≡ Daftar Custom Sumber");
+        tvSec3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        tvSec3.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec3.setTextColor(Color.WHITE);
+        tvSec3.setPadding(0, 0, 0, dpToPx(6));
+        containerContent.addView(tvSec3);
+
+        containerContent.addView(createCustomBox("Sumber Pendapatan / Tabungan", "Gaji · Grab · Gojek · ShopeeFood"));
+        containerContent.addView(createCustomBox("Kategori Pengeluaran", "Ketik nama pengeluaran sendiri secara bebas"));
+
+        // 5. Keamanan Aplikasi (PIN)
+        TextView tvSec4 = new TextView(this);
+        tvSec4.setText("🔒 Keamanan Aplikasi");
+        tvSec4.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        tvSec4.setTypeface(Typeface.DEFAULT_BOLD);
+        tvSec4.setTextColor(Color.WHITE);
+        tvSec4.setPadding(0, dpToPx(6), 0, dpToPx(6));
+        containerContent.addView(tvSec4);
+
+        LinearLayout cardPin = new LinearLayout(this);
+        cardPin.setOrientation(LinearLayout.VERTICAL);
+        cardPin.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+        cardPin.setBackground(gdCardName);
+        cardPin.setLayoutParams(pCardMargin);
+
+        TextView tvPinTitle = new TextView(this);
+        tvPinTitle.setText("Aktifkan PIN");
+        tvPinTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvPinTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvPinTitle.setTextColor(Color.WHITE);
+
+        final EditText etPin = createInputNumber("Buat PIN (4-6 angka)", pref.getString("app_pin", ""));
+        etPin.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+
+        Button btnPin = new Button(this);
+        btnPin.setText("Simpan PIN");
+        btnPin.setTextColor(Color.parseColor("#0F172A"));
+        btnPin.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        btnPin.setTypeface(Typeface.DEFAULT_BOLD);
+        btnPin.setBackground(gdBtnName);
+
+        btnPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String p = etPin.getText().toString();
+                if (!p.isEmpty()) {
+                    pref.edit().putString("app_pin", p).apply();
+                    Toast.makeText(MainActivity.this, "PIN Berhasil Disimpan!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        cardPin.addView(tvPinTitle);
+        cardPin.addView(etPin);
+        cardPin.addView(btnPin);
+        containerContent.addView(cardPin);
 
         TextView tvAuthor = new TextView(this);
         tvAuthor.setText("\nINCOMESTRUCT v1.0\nDibuat oleh Helmi Zainul Pahmi");
@@ -982,8 +1206,60 @@ public class MainActivity extends Activity {
         tvAuthor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         tvAuthor.setTypeface(Typeface.DEFAULT_BOLD);
         tvAuthor.setGravity(Gravity.CENTER_HORIZONTAL);
-        tvAuthor.setPadding(0, dpToPx(20), 0, 0);
+        tvAuthor.setPadding(0, dpToPx(20), 0, dpToPx(10));
         containerContent.addView(tvAuthor);
+    }
+
+    private View createCustomBox(String title, String sub) {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14));
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(Color.parseColor("#121721"));
+        gd.setCornerRadius(dpToPx(16));
+        card.setBackground(gd);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 0, 0, dpToPx(10));
+        card.setLayoutParams(lp);
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("≡ " + title);
+        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvTitle.setTextColor(Color.WHITE);
+
+        TextView tvSub = new TextView(this);
+        tvSub.setText(sub);
+        tvSub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        tvSub.setTextColor(Color.parseColor("#64748B"));
+        tvSub.setPadding(0, dpToPx(4), 0, 0);
+
+        card.addView(tvTitle);
+        card.addView(tvSub);
+        return card;
+    }
+
+    private EditText createInputNumber(String hint, String val) {
+        EditText et = new EditText(this);
+        et.setHint(hint);
+        et.setText(val);
+        et.setHintTextColor(Color.parseColor("#64748B"));
+        et.setTextColor(Color.WHITE);
+        et.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        et.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(Color.parseColor("#0B0E14"));
+        gd.setCornerRadius(dpToPx(14));
+        et.setBackground(gd);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, dpToPx(6), 0, dpToPx(8));
+        et.setLayoutParams(lp);
+        return et;
     }
 
     private EditText createInputText(String hint, String val) {
