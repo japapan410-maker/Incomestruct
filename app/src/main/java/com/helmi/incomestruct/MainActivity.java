@@ -79,8 +79,8 @@ public class MainActivity extends Activity {
         nav.setPadding(0, dpToPx(10), 0, dpToPx(14));
 
         String[] tabs = {"Beranda", "Saldo", "Transaksi", "Rekap", "Pengaturan"};
-        // Menggunakan ikon teks monokrom yang selaras (⌂, $, ⇆, 📊, ⚙)
-        String[] textIcons = {"⌂", "$", "⇆", "📊", "⚙"}; 
+        // Tab 4 (Rekap) diganti garis monokrom bersih "≡" agar selaras dengan tab lain
+        String[] textIcons = {"⌂", "$", "⇆", "≡", "⚙"}; 
 
         for (int i = 0; i < tabs.length; i++) {
             final int tabIndex = i;
@@ -191,17 +191,17 @@ public class MainActivity extends Activity {
         cardSaldo.setLayoutParams(pSaldo);
         containerContent.addView(cardSaldo);
 
-        // Menggunakan simbol monokrom bersih (+, -, T, D) tanpa warna-warni emoji
+        // 4 Kartu Statistik dengan warna ikon & teks nominal sesuai permintaan khusus:
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "+"));
-        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "-"));
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "↓")); // Panah ke bawah hijau
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#EF4444", "↑")); // Panah ke atas merah
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "T"));
-        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "!"));
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "👛")); // Dompet biru
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡")); // Perisai gold
         containerContent.addView(row2);
 
         TextView tvCatat = new TextView(this);
@@ -285,14 +285,14 @@ public class MainActivity extends Activity {
 
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
-        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "+"));
-        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#F59E0B", "-"));
+        row1.addView(createStatCard("Pendapatan", formatRupiah(in), "#10B981", "↓"));
+        row1.addView(createStatCard("Pengeluaran", formatRupiah(out), "#EF4444", "↑"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "T"));
-        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "!"));
+        row2.addView(createStatCard("Tabungan", formatRupiah(tab), "#3B82F6", "👛"));
+        row2.addView(createStatCard("Dana darurat", formatRupiah(emg), "#F59E0B", "🛡"));
         containerContent.addView(row2);
     }
 
@@ -312,9 +312,9 @@ public class MainActivity extends Activity {
 
         TextView tvSymbol = new TextView(this);
         tvSymbol.setText(symbolText);
-        tvSymbol.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        tvSymbol.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         tvSymbol.setTypeface(Typeface.DEFAULT_BOLD);
-        tvSymbol.setTextColor(Color.parseColor("#64748B"));
+        tvSymbol.setTextColor(Color.parseColor(colorHex)); // Simbol dicetak tebal berwarna sesuai jenisnya
         tvSymbol.setPadding(0, 0, 0, dpToPx(4));
 
         TextView label = new TextView(this);
@@ -326,7 +326,7 @@ public class MainActivity extends Activity {
         valueTv.setText(val);
         valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         valueTv.setTypeface(Typeface.DEFAULT_BOLD);
-        valueTv.setTextColor(Color.parseColor(colorHex));
+        valueTv.setTextColor(Color.parseColor(colorHex)); // Nilai nominal / Rp dicetak tebal dengan warna khusus
         valueTv.setPadding(0, dpToPx(4), 0, 0);
 
         card.addView(tvSymbol);
@@ -436,7 +436,7 @@ public class MainActivity extends Activity {
         etWaktu.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
         etWaktu.setBackground(gdInput);
         LinearLayout.LayoutParams pSub2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        pSub2.setMargins(dpToPx(6), dpToPx(6), 0, dpToPx(16));
+        pSub2.setMargins(0, dpToPx(6), 0, dpToPx(16));
         etWaktu.setLayoutParams(pSub2);
         colWaktu.addView(etWaktu);
         dateRow.addView(colWaktu);
@@ -701,7 +701,7 @@ public class MainActivity extends Activity {
                 card.setLayoutParams(pCard);
 
                 TextView tvIcon = new TextView(this);
-                tvIcon.setText(item.contains("[+]") ? "+" : "-");
+                tvIcon.setText(item.contains("[+]") ? "↓" : "↑");
                 tvIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 tvIcon.setTypeface(Typeface.DEFAULT_BOLD);
                 tvIcon.setTextColor(Color.parseColor(item.contains("[+]") ? "#10B981" : "#EF4444"));
@@ -894,7 +894,7 @@ public class MainActivity extends Activity {
         LinearLayout row1 = new LinearLayout(this);
         row1.setOrientation(LinearLayout.HORIZONTAL);
         row1.addView(createSimpleGridCard("Pendapatan", formatRupiah(in), "#10B981"));
-        row1.addView(createSimpleGridCard("Pengeluaran", formatRupiah(out), "#F59E0B"));
+        row1.addView(createSimpleGridCard("Pengeluaran", formatRupiah(out), "#EF4444"));
         containerContent.addView(row1);
 
         LinearLayout row2 = new LinearLayout(this);
@@ -922,7 +922,7 @@ public class MainActivity extends Activity {
 
         long maxArus = Math.max(Math.max(Math.max(in, out), tab), Math.max(emg, 1));
         cardArus.addView(createArusRow("Pendapatan", in, maxArus, "#10B981"));
-        cardArus.addView(createArusRow("Pengeluaran", out, maxArus, "#F59E0B"));
+        cardArus.addView(createArusRow("Pengeluaran", out, maxArus, "#EF4444"));
         cardArus.addView(createArusRow("Tabungan", tab, maxArus, "#3B82F6"));
         cardArus.addView(createArusRow("Darurat", emg, maxArus, "#F59E0B"));
 
