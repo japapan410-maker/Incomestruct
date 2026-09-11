@@ -1,0 +1,15 @@
+plugins {
+    id 'com.android.application' version '7.4.2'
+}
+
+android {
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.helmi.incomestruct"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+    }
+}
