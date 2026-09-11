@@ -21,6 +21,9 @@ jobs:
       with:
         gradle-version: '7.5'
 
+    - name: Generate Gradle Wrapper
+      run: gradle wrapper --gradle-version 7.5
+
     - name: Build with Gradle
       run: ./gradlew :app:assembleDebug
 
